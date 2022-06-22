@@ -1,0 +1,112 @@
+
+<!DOCTYPE HTML> 
+<html>  
+   <head> 
+      <style type="text/css">
+         table{
+            border: solid 3px;
+            width: 500px;
+            border-collapse: collapse;
+         }
+         
+         td{
+            border: solid 3px;
+            width: 25%;
+         }
+
+         #sql{
+            text-align: center;
+         }
+      </style>
+  
+      <script type = "text/javascript"> 
+         var db = openDatabase('mydatabase', '1.0', 'Test DB', 2 * 1024 * 1024); 
+         var msg; 
+         //javascript中的函数
+         function submit() {
+            db.transaction(function (tx) { 
+               /*学习网址：
+                  https://www.w3school.com.cn/jsref/met_doc_getelementbyid.asp
+               学习内容：
+                  javascript中如何通过id获取输入框中的内容
+                  注意括号中，双引号内对应了我们下方body代码中的id
+               */
+               var n = document.getElementById("iD").value;
+               var b1 = "'"+ document.getElementById("name").value +"'";
+               var b2 = "'"+ document.getElementById("class").value +"'";
+               var b3 = "'"+ document.getElementById("t").value +"'";
+               
+               //sql语句
+               tx.executeSql('CREATE TABLE IF NOT EXISTS students (id unique, 姓名, 班级, 导师)'); 
+               tx.executeSql('INSERT INTO students (id, 姓名, 班级, 导师) VALUES (?,?,?,?)',[n,b1,b2,b3]); 
+               
+               //显示信息添加的语句
+               msg = '<p>信息已添加</p>'; 
+               document.querySelector('#status').innerHTML +=  msg; 
+            });
+
+            db.transaction(function (tx) { 
+               //sql检索语句
+               tx.executeSql('SELECT * FROM students', [], function (tx, results) { 
+                  var len = results.rows.length, i; 
+                  msg = "<p>已经查询到以下信息: " + len + "行</p>"; 
+                  document.querySelector('#status').innerHTML +=  msg; 
+
+                  //为数据添加表格，让数据看起来更加清晰
+                  msg ="<table><tr><td>学号</td><td>姓名</td><td>班级</td><td>导师</td></tr>";
+                  for (i = 0; i < len; i++) { 
+                     //获取每一行的信息
+                     var re = results.rows.item(i);
+                     //获取每一行的每一列信息，添加表格标签
+                     msg += "<tr><td>" + re.id + "</td>" + "<td>" + re.姓名 + "</td>" + "<td>" + re.班级 + "</td>" + "<td>" + re.导师 + "</td></tr>"; 
+                     
+                  } 
+
+                  //显示检索信息
+                  document.querySelector('#status').innerHTML =  msg + "</table>"; 
+               }, null); 
+            }); 
+      }
+      </script> 
+   </head> 
+  
+   <body> 
+      <div id="sql">
+      <h1>学生信息添加</h1>
+      <div id = "status" name = "status"></div> 
+      <!--
+         学习网址：
+            https://www.w3school.com.cn/tags/tag_form.asp
+         学习内容：
+            html中的form元素
+            label-输入框的标题
+            input-输入框，属性有许多，type定义输入框类型text表示输入文字；id很重要，前面的函数中需要用到；name可有可无；value代表默认值
+      -->
+      <form>
+        <label for="iD">学号:</label><br>
+        <input type="text" id="iD" name="iD" value="20220301"><br>
+        <label for="name">姓名:</label><br>
+        <input type="text" id="name" name="name" value="Doe"><br>
+        <label for="class">班级:</label><br>
+        <input type="text" id="class" name="class" value="七（1）"><br>
+        <label for="t">导师:</label><br>
+        <input type="text" id="t" name="t" value="周英格"><br><br>
+      </form> 
+      <!--
+         学习网址：
+            https://www.w3school.com.cn/tags/tag_button.asp
+         学习内容：
+            html中的button（按钮）元素
+            onclick很重要，它会让网站在点击按钮后运行前面script元素中的submit函数
+      -->
+      <button onclick="submit();">添加数据</button>
+      </div>
+      <pre style="font-size: 20px;">
+学习链接：
+<a href="https://www.runoob.com/html/html5-web-sql.html">web sql整页代码讲解</a>
+<a href="https://www.w3school.com.cn/tags/tag_button.asp">HTML按钮</a>
+<a href="https://www.w3school.com.cn/tags/tag_form.asp">HTML表单</a>
+<a href="https://www.w3school.com.cn/jsref/met_doc_getelementbyid.asp">JavaScript获取网页输入框信息</a>
+      </pre>
+   </body> 
+</html>
