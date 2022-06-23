@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">span{color:red;}body{padding:40px;text-align: center;}div{text-align: left;padding-left: 20%;}</style>
+	<script type="text/javascript">
+		function randTest(){
+			var test = Math.floor(Math.random()*2);
+			switch(test){
+				case 0:
+					document.getElementById("excel").innerHTML=
+					'<h1>\
+					1. Excel测试题A卷: 高师毕业生普通话测试结果</h1>\
+					<h2>下载并打开<u>“高师毕业生普通话测试结果.xls”</u>工作簿，完成以下任务：</h2>\
+					\
+					<p>\
+					1、求出各学校<span>一级甲等</span>和<span>一级乙等</span>的人数<span>总和</span>。（使用函数）<br>\
+					2、<span>合并标题栏</span>的单元格，并使“高师毕业生普通话测试结果（人）”<span>居中显示</span>。<br>\
+					3、按各学校一级人数总和<span>降序排序</span>。<br>\
+					</p>\
+					<a href="./8年级试题/1excel/高师毕业生普通话测试结果.xls" download><img src="download.webp" width="50px">下载“高师毕业生普通话测试结果.xls”表格</a><br>';
+					break;
+				case 1:
+				document.getElementById("excel").innerHTML=
+					'<h1>1. Excel测试题B卷: 副食品库存统计</h1>\
+					<h2>下载并打开<u>“副食品库存统计.xls”</u>工作簿，完成以下任务：</h2>\
+					<p>\
+					1、<span>13日数据与14日数据</span>的位置颠倒了，请你将它们改过来。<br>\
+					2、请你用<span>函数运算</span>找出12-15日各副食品的<span>平均价格</span>。<br>\
+					3、请根据“平均价格”的数据将所有商品从<span>低到高排序</span>。<br>\
+					</p>\
+					<a href="./8年级试题/1excel/副食品库存统计.xls" download><img src="download.webp" width="50px">下载“副食品库存统计.xls”表格</a><br>';
+					break;
+			}
+			var testpy = Math.floor(Math.random()*2);
+			switch(testpy){
+				case 0:
+					document.getElementById("python").innerHTML=
+					'<h1>\
+					2. Python编程测试题A卷: 求阶乘</h1>\
+					<h2>下载并用IDLE打开<u>“求阶乘题目.py”</u>，填写缺失的代码</h2>\
+					\
+					<p>\
+					1、请<span>不要修改</span>源程序的结构，根据题意，删除原题中的①②③，并在相应处填写正确的代码，使程序完善。<br>\
+					2、调试运行，将该文件另存为“考生姓名-求阶乘.py”（“考生姓名”用考生各自姓名替代）<br>\
+					</p>\
+					<a href="./题目描述.txt" download><img src="download.webp" width="50px">下载“求阶乘题目.py”</a><br>';
+					break;
+				case 1:
+				document.getElementById("python").innerHTML=
+					'<h1>2. Python编程测试题B卷: 等第判读</h1>\
+					<h2>下载并用IDLE打开<u>“等第判断题目.py”</u>，填写缺失的代码</h2>\
+					<p>\
+					1、请<span>不要修改</span>源程序的结构，根据题意，删除原题中的①②③，并在相应处填写正确的代码，使程序完善。<br>\
+					2、调试运行，将该文件另存为“考生姓名-等第判断.py”（“考生姓名”用考生各自姓名替代）<br>\
+					</p>\
+					<a href="./8年级试题/2python/等第判断题目.py" download><img src="download.webp" width="50px">下载“等第判断题目.py”</a><br>';
+					break;
+			}
+			document.querySelector('#button').disabled = true;
+		}
+	</script>
+</head>
+<body>
+	<form>
+		<label>学号：</label>
+		<input type="text" id="id" name="id"><br>
+		<label>姓名：</label>
+		<input type="text" id="id" name="id"><br>
+	</form><br>
+	<button id="button" onclick="randTest()">提交</button>
+	<div id="excel"></div><br><br>
+	<div id="python"></div>
+</body>
+</html>

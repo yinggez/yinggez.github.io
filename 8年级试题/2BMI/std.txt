@@ -1,0 +1,13 @@
+#计算体重指数BMI
+height=float(input('请输入身高（米）：'))
+weight=①(input('请输入体重（公斤）：'))
+BMI=②
+if ③:
+    print('您的BMI值为：',round(BMI,2) ,'体重过轻')
+elif 18.5<=BMI<24:
+    print('您的BMI值为：',round(BMI,2) ,'体重正常')
+elif 24<=BMI<27:
+    print('您的BMI值为：',round(BMI,2) ,'体重超重')
+④:
+    print('您的BMI值为：',round(BMI,2) ,'肥胖')
+
