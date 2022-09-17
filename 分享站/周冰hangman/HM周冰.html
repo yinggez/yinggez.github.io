@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hangman小游戏</title>
+  <style>
+  body{
+    background-size: cover;
+    background-image: url('R-C.jpg');
+    color: darkred;
+
+  }
+</style>
+</head>
+<body style="text-align: center;">
+  <!--开始编写游戏网页中的内容：包括标题h1，用于绘画的画布canvas，用于输入的对话框input，用于展示进度的容器p，用于提交猜词的按钮button-->
+
+  <h1>Hangman</h1>
+  <canvas id="hangman" width="300" height="400" style="border: solid darkred;"></canvas><br>
+   <audio controls autoplay>
+    <source src="1.wav" type="audio/wav">
+  </audio>
+
+
+  请输入一个字母：<input type="text" id="myText">
+  <p id="show" style="font-size: 30px;"></p>
+
+  <button onclick="myFunction()">就它了！</button>
+  <!--开始写我们需要的JS代码-->
+  <script type="text/javascript">
+    //为我们绘画准备画布，参考绘图学本，并设置绘图画笔的粗度
+    const canvas = document.getElementById('hangman');//填写
+    const ctx = canvas.getContext("2d");//填写
+    ctx.lineWidth = 4;
+    ctx.strokeStyle="white";
+
+    //使用一个函数绘图，我们可以通过给它不同的数字，让他绘制Hangman不同的身体部位
+    function draw(part) {
+      switch (part) {
+        case 6 ://画绞刑架
+          ctx.beginPath();
+          ctx.moveTo(225,30);
+          ctx.lineTo(225,10);
+          ctx.lineTo(100,10);
+          ctx.lineTo(100,300);
+          ctx.moveTo(100,300);
+          ctx.lineTo(40,300);
+          ctx.moveTo(100,300);
+          ctx.lineTo(160,300);
+          ctx.stroke();
+          break;
+
+        case 5://画小人的头（一个圆）
+          ctx.beginPath();
+          ctx.arc(225,50,20,0,Math.PI*2,false);//填写
+          ctx.stroke();
+          break;
+        
+        case 4://画小人的身体（一条直线）
+          ctx.beginPath();
+          ctx.moveTo(225,70);
+          ctx.lineTo(225,160);
+          ctx.stroke();
+          break;
+
+        case 3://画小人的左手
+          ctx.beginPath();
+          ctx.moveTo(225,90);
+          ctx.lineTo(185,80);
+          ctx.stroke();
+          break;
+
+        case 2://画小人的右手
+          ctx.beginPath();
+          ctx.moveTo(225,90);
+          ctx.lineTo(265,80);
+          ctx.stroke();
+          break;
+
+        case 1://画小人的左腿
+          ctx.beginPath();
+          ctx.moveTo(225,160);
+          ctx.lineTo(175,200);
+          ctx.stroke();
+          break;
+
+        case 0://画小人的右腿
+          ctx.beginPath();
+          ctx.moveTo(225,160);
+          ctx.lineTo(275,200);
+          ctx.stroke();
+        break;
+      } 
+    }
+
+  //和先前Hangman简单版的前部分代码相同
+  var food = ["eerie","terrifying","coprophobia",";terror","unnerving","spooky","terrorism","phobia","creepy","unnerving"];
+  var word = food[Math.floor(Math.random()*10)];
+  var answer = [];
+  for (var i=0;i<word.length;i++){
+    answer[i]="_";
+  }
+  var count = 7;
+
+  //此处用DOM帮助我们展示最初的进度
+  document.getElementById("show").innerHTML = answer.join(" ");
+
+  //用函数代替先前的while循环
+  function myFunction() {
+      //设置一个flag（立flag，后面如果猜错字母就会被“打脸”）
+      var flag=0;
+      //将玩家猜测的字母存进guess变量
+      var guess = document.getElementById("myText").value;
+      
+      if (guess.length != 1)//看长度是否OK，与简易版相同
+      {
+        document.getElementById("show").innerHTML = "只能输入一个字母哦！";
+      }else {
+        //我们在玩家输入合适的内容时，减少猜测次数
+        count--;
+        //同样的for循环来看玩家是否猜中字母
+        for (var j=0;j<word.length;j++){
+          if (word[j]===guess){
+            answer[j]=guess;
+            count++;
+            //如果猜中了我们就将flag设置为1
+            flag = 1;
+          }
+        }
+        //添加一个“打脸”的代码，如果没有猜中，我们就让draw函数绘制对应的身体部位，所绘制的身体部位与我们所剩的猜测次数相关
+        if (flag==0){
+          draw(count);
+        }
+      }
+      //展示进度
+      document.getElementById("show").innerHTML = answer.join(" ");
+      
+      //如果单词完整被猜出来，展示恭喜的信息
+      if (answer.join("") == word){
+        document.getElementById("show").innerHTML = "恭喜你猜对了！答案是" + word;
+      }
+      //如果所剩猜测次数为0，展示失败的信息 
+      if (count === 0){
+        document.getElementById("show").innerHTML = "你输了！答案是" + word;
+      }
+
+    }  
+	</script>
+  
+</body>
+</html>

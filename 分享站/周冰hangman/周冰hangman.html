@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+<h1>Hangman</h1>
+<script type="text/javascript">
+	// var name=prompt("你的名字是什么？");
+ //    console.log("hello"+name);
+var food=["sublime","chocolate","fish","control","superman","celebration","contribute","advertisement","Pneumonoultramicroscopicsilicovolcanoconiosis","Z"];
+var word=food[Math.floor(Math.random()*10)];
+var answer=[];
+for(var i=0;i<word.length;i++){
+	answer[i]="_";
+};
+var count=7;
+while(count>0){
+	if(word===answer.join("")){ 
+		alert("congratulations!!!!!!!!!!!!!!!!!");
+		break;
+	}
+
+
+	count--;
+	alert(answer.join(" "));
+	var guess=prompt("猜一个字母：");
+	if (guess==null){
+		break;
+	}else if (guess.length!=1){
+		alert("只能输一个字母哦！");
+	}else{
+		for(var j=0;j<word.length;j++){
+			if (word[j]===guess){
+				answer[j]=guess;
+				count++;
+			}
+		}
+
+}
+
+}
+    alert(answer.join(""));
+    alert("这个单词是"+word);
+
+
+</script>
+</body>
+</html>

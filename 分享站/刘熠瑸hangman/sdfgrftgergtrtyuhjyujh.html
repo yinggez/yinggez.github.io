@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<title>
+		</title>
+</head>
+<body style="background-color: black;">
+<h1>HANGMAN</h1>
+<script type="text/javascript">
+var w = ["polit","zebra","try","pet","vet","duck","mag","hallow","aim","zhoubing"];
+var id = w[Math.floor(Math.random()*9)];
+var answer = [];
+for (var i=0; i < id.length;i++){
+	answer[i] = "_";
+}
+var count = 7;
+while (count >0){
+	if(id === answer.join("")){	
+		break;
+	}
+	count--;
+	alert(answer.join(" "));
+	var guess = prompt("guess a word");
+	if (guess==null){
+		break;
+	}else if (guess.length!=1)
+	{
+		alert("one at a time");
+	}else{
+		for (var j =0;j<id.length;j++){
+			if (id[j] === guess){
+				answer[j] =guess;
+				count++;
+			}
+		}
+	}
+}
+alert("you win");
+</script>
+</body>
+</html>
