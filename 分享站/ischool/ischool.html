@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style type="text/css">
+			@font-face{
+				font-family: 'star';
+				src: url(font/星辰在唱歌.ttf);
+			}
+			* {
+				padding: 0;
+				margin: 0;
+			}
+
+			h2 {
+				text-align: center;
+				font-family:"star";
+				font-size: 24px;
+				font-weight: bold;
+			}
+
+			.top {
+				margin-top: 600px; 
+				width: 50px;
+				height: 50px;
+				background: #d1defb;
+				position: fixed;
+
+			}
+
+			.header{
+				height:300px;
+				background: url(img/ischool.png);
+				background-repeat: no-repeat;
+				color: #fff;
+				font-family: Arial;
+				font-size: 36px;
+				font-weight: bold;
+				text-align: center;
+				text-decoration-color: black;
+				line-height: 800%;
+			}
+
+			.navbar {
+				position: -webkit-sticky;
+				position: sticky;
+				top: 20px;
+				padding-left: 200px;
+				background: #7d9cf0;
+				width: 100%;
+				height: 70px;
+			}
+
+			.navbar ul {
+				list-style: none;
+				float: left;
+				width: 60%;
+				height: 100%;
+
+			}
+
+			.navbar li {
+				float: left;
+				width: 20%;
+				height: 100%;
+				text-align: center;
+				vertical-align: top;
+				line-height: 370%;
+
+			}
+
+			.navbar li:hover {
+				background: #556495;
+			}
+
+			.navbar ul a{
+				color: #FFFFFF;
+			}
+			.navbar ul a:hover{
+				color: #81cedb;
+			}
+
+
+
+			.imgs {
+				
+				float: left;
+				padding: 60px;
+				margin: 20px 20px 20px 60px;
+				border-radius: 10px;
+				height: 400px;
+				width: 35%;
+				background: #d1defb;
+			}
+		
+			table, td {
+				 border:  3px solid black;
+			}
+
+			.links {
+				float: right;
+				padding: 60px;
+				margin: 20px 60px 20px 20px;
+				border-radius: 10px;
+				height: 400px;
+				width: 35%;
+				background: #d1defb;
+			}
+
+			.grid {
+				float: left;
+				margin: 20px 20px 20px 40px;
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+			}
+
+			.external {
+				background: url(img/2.png);
+				padding: 60px;
+				margin: 20px 10px 20px 20px;
+				border-radius: 10px;
+				height: 300px;
+				width: 300px;
+			}
+
+
+			.footer {
+				float: left;
+				background: #7d9cf0;
+				text-align: center;
+				color: #fff;
+				padding: 2% 0;
+				font-size: 14px;
+				width: 100%;
+			}
+
+			.link {
+				padding-left: 80px; 
+				padding-top: 20px;
+			}
+
+			.link:hover {
+				height: 150px;
+				padding-left: 77px;
+				padding-top: 18px;
+			}
+
+		</style>
+
+
+	</head>
+	<body id="home">
+		<!--页眉图片-->
+		<div class="top">
+			<a href="#home"><img src="img/top.png" width="50px"></a>
+		</div>
+
+		<!--页眉文字-->
+		<div class="header">
+			
+			<span style="color: black; float: right; padding: 10px 30px;">海南微城未来教育学校</span>
+
+			<img src="img/logo.png" style="float: left; padding: 130px 10px 0px 0px" height="50px">
+
+		</div>
+
+		<!--日期-->
+		<div>
+			<p id="p1" style="text-align: right; color: black;"></p>
+
+			<script>
+
+				var today = new Date();
+
+				var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+
+				document.getElementById("p1").innerHTML = '今日日期：' + date;
+
+			</script>
+		</div>
+
+		<!--菜单栏-->
+		<div class="navbar">
+			<ul>
+				<li style="background: #556495; color: white;">首页</li>
+				<li><a href="intro.html">学校介绍</a></li>
+				<li><a href="contact.html">联系方式</a></li>
+			</ul>			
+		</div>
+
+		<!--图片+表格-->
+		<div class="imgs">
+			<h2>校园活动图片展示</h2>
+			<br/><br/>
+			<table>
+				<tr> <!--这是表格里的一行-->
+					<td><a href="img/p1.jpeg"><img src="img/p1.jpeg" height="100px" width="150px"></a></td>
+					<td><a href="img/p2.jpeg"><img src="img/p2.jpeg" height="100px" width="150px"></a></td>
+					<td><a href="img/p3.jpeg"><img src="img/p3.jpeg" height="100px" width="150px"></a></td>
+				</tr>
+				<tr> <!--这也是表格里的一行-->
+					<td><a href="img/p4.jpeg"><img src="img/p4.jpeg" height="100px" width="150px"></a></td>
+					<td><a href="img/p5.jpeg"><img src="img/p5.jpeg" height="100px" width="150px"></a></td>
+					<td><a href="img/p6.jpeg"><img src="img/p6.jpeg" height="100px" width="150px"></a></td>
+				</tr>
+				<tr> <!--这还是表格里的一行-->
+					<td><a href="img/p7.jpeg"><img src="img/p7.jpeg" height="100px" width="150px"></a></td>
+					<td><a href="img/p8.jpeg"><img src="img/p8.jpeg" height="100px" width="150px"></a></td>
+					<td><a href="img/p9.jpeg"><img src="img/p9.jpeg" height="100px" width="150px"></a></td>
+				</tr>
+			</table>
+		</div>
+
+		<!--链接+列表-->
+		<div class="links">
+			<h2>近期活动分享链接</h2>
+			<ul style="list-style-image: url(img/bulletpoint.png); padding-left: 50px;">
+				<li><a href="https://mp.weixin.qq.com/s/7ag_labad-XHaRP_4E92Aw" target=”_blank”>课程体验日丨想与你分享我在iSchool的成长故事</a></li>
+				<li><a href="https://mp.weixin.qq.com/s/8I-CpJpidEw1akqgTKnPPg" target=”_blank”>多彩活动，缤纷校园丨iSchool的孩子们“玩”得不一般~</a></li>
+				<li><a href="https://mp.weixin.qq.com/s/uUaSVKTy-byTTLgPw4GQjQ" target=”_blank”>iSchool学生赴澳门参加了东亚模拟联合国大会并获佳绩</a></li>
+				<li><a href="https://mp.weixin.qq.com/s/oTFyuUbcnSZ5CgZYUFji9w" target=”_blank”>教师分享丨来iSchool的第12天</a></li>
+			</ul>
+		</div>
+
+		<!--转学入学体验课-->
+		<div class="grid">
+			<div class="external">
+				<h2 style="padding-top: 40px;">转学<br>(2-6年级, 8-9年级)</h2>
+				<a href="https://assist.admin.ischoolhn.com/recruit/mobile-recruit/#/pages/login/login?transfer=" target="_blank"><img class="link" src="img/icon1.png"></a>
+			</div>
+
+			<div class="external">
+				<h2 style="padding-top: 40px;">入学<br>(1年级, 7年级)</h2>
+				<a href="https://assist.admin.ischoolhn.com/recruit/mobile-recruit/#/pages/login/login?degree" target="_blank"><img class="link" src="img/icon2.png"></a>
+			</div>
+
+			<div class="external">
+				<h2 style="padding-top: 40px;">课程体验<br>(1-9年级)</h2>
+				<a href="https://assist.admin.ischoolhn.com/recruit/mobile-recruit/#/pages/login/login?experience" target="_blank"><img class="link" src="img/icon3.png"></a>
+			</div>
+
+		</div>
+
+		<!--页脚-->
+		<div class="footer">
+			主办单位：海南微城未来教育学校<br/>
+			地址:海南省澄迈县老城镇蓝梦三路<br/>
+			<img src="img/wechat.png"><br/>
+		</div>
+		<pre>
+			
+
+
+
+
+
+
+
+
+
+		</pre>
+
+	</body>
+</html>

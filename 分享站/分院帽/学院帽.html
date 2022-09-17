@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>学院帽网页</title>
+	<style type="text/css">
+		@font-face{
+			font-family: "hp";
+			src:url(harry_p/HARRYP__.TTF);
+		}
+
+		@font-face{
+			font-family: "candy";
+			src:url(candy.ttf);
+			color: black;
+		}
+
+		body{
+			font-family: hp;
+			background-image: url('bg.jpeg');
+			background-size: cover;
+			background-attachment: fixed;
+			font-size: 25px;
+
+		}
+		#questions, #next, #finish, #restart, .result{
+			display: none;
+		}
+
+		#start, #restart{
+			margin-left: 45%;
+		}
+		.main{
+			margin: 100px;
+			padding: 50px;
+			
+			background: rgba(204, 204, 204, 0.8);
+		}
+		
+		h1{
+			text-align: center;
+		}
+
+		button{
+			background-image: linear-gradient(92.88deg, #455EB5 9.16%, #5643CC 43.89%, #673FD7 64.72%);
+			border-radius: 8px;
+			border-style: none;
+			box-sizing: border-box;
+			color: #FFFFFF;
+			cursor: pointer;
+			flex-shrink: 0;
+			font-family: candy;
+			font-size: 20px;
+			font-weight: 500;
+			height: 4rem;
+			padding: 0 1.6rem;
+			text-align: center;
+			text-shadow: rgba(0, 0, 0, 0.25) 0 3px 8px;
+			transition: all .5s;
+			user-select: none;
+			-webkit-user-select: none;
+			touch-action: manipulation;
+
+  
+		}
+
+		button:hover {
+		  box-shadow: rgba(80, 63, 205, 0.5) 0 1px 30px;
+		  transition-duration: .1s;
+		}
+
+
+		
+	</style>
+
+</head>
+<body>
+
+	<script type="text/javascript">
+		questions = ["如果你突然被强大的不明生物袭击，你会怎么做",
+			"你希望自己掌握何种咒语", 
+			"和陌生人交往时，你可能", 
+			"魁地奇球赛中你最想当什么", 
+			"如果你发现了一袋加隆，你会怎么办？", 
+			"你喜欢哪一种风", 
+			"你希望自己的魔杖有什么样的芯", 
+			"使用黑魔法的人对你来说意味着什么", 
+			"在魔法世界里，你存在的意义是什么", 
+			"你最喜欢上什么课", 
+			"你一生追求的是什么", 
+			"你拥有强大权利时将如何使用它", 
+			"如果你从霍格沃茨毕业，你想从事什么工作", 
+			"你对这个世界的期望是什么", 
+			"如果你在球队输了球，你会怎么表现", 
+			"你认为成为英雄需要什么条件", 
+			"你喜欢的宠物是什么", 
+			"你参加三强争霸赛时希望能掌握什么能力", 
+			"你心目中理想的魁地奇球队是怎么样的", 
+			"最后，你为什么想进入霍格沃茨"];
+
+		a = ["A 防御",
+			"A 变形术",
+			"A 推心置腹",
+			"A 守门员",
+			"A 送还",
+			"A 清爽的微风",
+			"A 龙的神经",
+			"A 无足轻重的存在",
+			"A 守护自己心爱的人",
+			"A 魔法师",
+			"A 财富",
+			"A 保卫和平",
+			"A 霍格沃茨教师",
+			"A 按每个人的意愿自由生活",
+			"A 认为只要尽了力就够了",
+			"A 不屈的精神",
+			"A 独角兽",
+			"A 丰富的战术知识",
+			"A 个人力量弱但集体力量强的队伍",
+			"A 为了守护爱人"];
+
+		b = ["B 逃跑",
+			"B 隐形术",
+			"B 保留怀疑",
+			"B 击球手",
+			"B 自用",
+			"B 潮湿的海风",
+			"B 独角兽毛",
+			"B 崇拜对象",
+			"B 不断的提高自己",
+			"B 草药学",
+			"B 知识",
+			"B 统治全世界",
+			"B 预言家日报记者",
+			"B 统一的秩序",
+			"B 发誓以牙还牙",
+			"B 超出常人的智慧",
+			"B 猫头鹰",
+			"B 灵活的技巧",
+			"B 自己一个人就足够",
+			"B 为了魔法世界"];
+		c = ["C 反击",
+			"C 飞行术",
+			"C 精明主动",
+			"C 追球手",
+			"C 捐赠",
+			"C 和熙的春风",
+			"C 凤凰羽毛",
+			"C 邪恶的敌人",
+			"C 圆梦",
+			"C 黑魔法防御课",
+			"C 权利",
+			"C 伸张正义",
+			"C 魔法部长",
+			"C 爱，勇气和希望",
+			"C 一笑了之，认为输赢乃兵家常事",
+			"C 绝对的统率力",
+			"C 夜骐/龙",
+			"C 强大的力量",
+			"C 少数人是非常精锐的",
+			"C 为了得到名誉"];
+		d = ["","","D 热情友善","D 找球手","","","","","","D 飞行课","","","D 傲罗","","","D 大无畏的精神","D 凤凰","D 冷静的判断力","","D 为了自由梦想"];
+
+		function start(){
+			cnt=0;
+			score=0;
+			document.getElementById("start").style.display= "none";
+			document.getElementById("restart").style.display= "none";
+			document.getElementById("next").style.display= "block";
+			document.getElementById("questions").style.display= "block";
+			next();
+		}
+		function next(){
+
+			elementA = document.getElementById("A");
+			elementB = document.getElementById("B");
+			elementC = document.getElementById("C");
+			elementD = document.getElementById("D");
+			if (elementA.checked) {score+=1;elementA.checked=0;}
+			else if (elementB.checked) {score+=2;elementB.checked=0;}
+			else if (elementC.checked) {score+=3;elementC.checked=0;}
+			else if (elementD.checked){score+=4;elementD.checked=0;}
+			else{if (cnt!=0)return;}
+
+			document.getElementById("question").innerHTML = questions[cnt];
+			document.getElementById("Alabel").innerHTML = a[cnt];
+			document.getElementById("Blabel").innerHTML = b[cnt];
+			document.getElementById("Clabel").innerHTML = c[cnt];
+			if (d[cnt]==""){
+				elementD.style.display ="none";
+				document.getElementById("Dlabel").style.display = "none";
+			}else{
+				elementD.style.display ="inline";
+				document.getElementById("Dlabel").style.display ="inline";
+				document.getElementById("Dlabel").innerHTML = d[cnt];
+			}
+			cnt++;
+			if (cnt>=20) {
+				document.getElementById("finish").style.display="block";
+				document.getElementById("next").style.display="none";
+			}
+			
+		}
+
+		function finish(){
+			if (score >= 20 && score <= 31){
+				answer = "赫奇帕奇（Hufflepuff）";
+			}else if(score <= 43){
+				answer = "拉文克劳（Ravenclaw）";
+			}else if(score <= 55){
+				answer = "斯莱特林（Slytherin）";
+			}else{
+				answer = "格兰芬多（Gryffindor）";
+			}
+			document.getElementById("questions").innerHTML= "<h1>恭喜你！你的学院是 " +answer + " ！</h1>";
+			document.getElementById("finish").style.display= "none";
+			document.getElementById("restart").style.display= "block";
+			document.getElementById("pic").src= "houses.png";
+			
+		}
+	</script>
+	<div class="main">	
+	<h1 style="font-size: 80px;">Welcome to the Sorting Hat</h1>
+	<img src="hat.png" width="200px" style="margin-left: 42%;"><br>
+	<p>分院仪式是霍格沃茨一年一度的仪式，在每个学年开始时进行。这个仪式的目的是将一年级新生分配到学校的四个学院中：格兰芬多、赫奇帕奇、拉文克劳和斯莱特林。在全体新生渡湖来到学校后，他们首先会来到礼堂参加这个仪式，仪式之后则是开学宴会。<br><br>
+在这里，你将需要回答一系列的问题，学院帽将通过你回答的答案给你分一个霍格沃茨学院。</p>
+
+	<div id="questions">
+		<h2 id="question" style="font-family: candy;"></h2>
+		<input type="radio" id="A" name="choice">
+		<label id="Alabel" for="A">	</label><br>
+		
+		<input type="radio" id="B" name="choice">
+		<label id="Blabel" for="B">	</label><br>
+
+		<input type="radio" id="C" name="choice">
+		<label id="Clabel" for="C">	</label><br>
+
+		<input type="radio" id="D" name="choice">
+		<label id="Dlabel" for="D">	</label><br>
+	</div>
+		<img id="pic" width="100%;" style="margin-top: 30px;">
+		<button id="start" onclick="start();">开始测试</button>
+		<button id="next" onclick="next();">下一个问题</button>
+		<button id="finish" onclick="finish();">完成测试</button>
+		<button id="restart" onclick="start();">再来一次</button>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+@font-face{
+	font-family: 'star';
+	src: url(font/星辰在唱歌.ttf);
+}
+
+h2{
+	font-family: "star";
+}
