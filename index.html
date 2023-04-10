@@ -83,7 +83,12 @@
 
           // 隐藏右上角菜单 点击后打开右上角菜单（转发、分享、收藏、打开到等）进行隐藏
           document.getElementById('hideNevBtn').addEventListener('click',function(){
-            WeixinJSBridge.invoke('hideOptionMenu',{},function(res){
+            WeixinJSBridge.invoke('sendAppMessage',{
+                  "link":"http://m.exmail.qq.com/", // 链接地址
+                  "img_url":"http://rescdn.qqmail.com/bizmail/zh_CN/htmledition/images/bizmail/v3/logo1ca3fe.png",
+                  "desc":"WeixinJSBridge API整理",  // 描述
+                  "title":"微信WeixinJSBridge API"  // 标题
+            },function(res){
               alert(JSON.stringify(res))
             });
           })
