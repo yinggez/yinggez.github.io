@@ -84,7 +84,7 @@ const teamTranslations = {
 function translateTeamName(name) {
   if (!name) return '';
   if (teamTranslations[name]) return teamTranslations[name];
-  
+
   // Translate bracket placeholders
   const winnerMatch = name.match(/Winner Match (\d+)/i);
   if (winnerMatch) {
@@ -94,14 +94,13 @@ function translateTeamName(name) {
   if (loserMatch) {
     return `第${loserMatch[1]}场败者`;
   }
-  
+
   return name;
 }
 
 function getFlag(teamName) {
   if (!teamName) return '⚽';
   for (const name in flagsMap) {
-    // Check both English name in map and Chinese translated name
     if (teamName.includes(name) || teamName.includes(teamTranslations[name])) {
       return flagsMap[name];
     }
@@ -110,11 +109,16 @@ function getFlag(teamName) {
 }
 
 // Global State
+// 默认数据库配置 (可在此处填入您的 Supabase 凭证，方便好友访问时免去配置，Anon Key 可以公开提交至 GitHub)
+const defaultSupabaseUrl = 'https://knyhqsviwufzxqwvajqe.supabase.co';
+const defaultSupabaseKey = 'sb_publishable_8774b2tWJNsvgN9A6V8FHA_prPMWFrk';
+
 let matches = [];
 let userTips = {};
 let username = '玩家 1';
 let friends = [];
 let activeView = 'list'; // 'list' or 'bracket'
+let supabaseClient = null;
 
 // DOM Elements
 const matchesContainer = document.getElementById('matches-container');
@@ -128,36 +132,119 @@ const rulesTrigger = document.getElementById('rules-trigger');
 const rulesModal = document.getElementById('rules-modal');
 const closeModal = document.getElementById('close-modal');
 
+
 // Load Data from Local Storage
 function loadLocalStorage() {
   username = localStorage.getItem('wc2026_username') || '玩家 1';
   usernameInput.value = username;
-  
+
   const savedTips = localStorage.getItem('wc2026_tips');
   if (savedTips) {
     userTips = JSON.parse(savedTips);
   }
-  
+
   const savedFriends = localStorage.getItem('wc2026_friends');
   if (savedFriends) {
     friends = JSON.parse(savedFriends);
   }
 }
 
+// Initialize Supabase Client
+function initSupabase() {
+  const url = localStorage.getItem('wc2026_supabase_url') || defaultSupabaseUrl;
+  const key = localStorage.getItem('wc2026_supabase_key') || defaultSupabaseKey;
+
+  if (url && key) {
+    try {
+      if (typeof supabase !== 'undefined' && supabase.createClient) {
+        supabaseClient = supabase.createClient(url, key);
+        console.log('Supabase client initialized.');
+      } else {
+        console.warn('Supabase library not loaded.');
+      }
+    } catch (e) {
+      console.error('Failed to init Supabase:', e);
+      supabaseClient = null;
+    }
+  } else {
+    supabaseClient = null;
+  }
+}
+
+// Sync predictions from Supabase database
+async function syncFromSupabase() {
+  if (!supabaseClient) return;
+
+  try {
+    const { data, error } = await supabaseClient
+      .from('predictions')
+      .select('username, tips, updated_at');
+
+    if (error) throw error;
+
+    if (data) {
+      const dbFriends = [];
+      data.forEach(row => {
+        if (row.username === username) {
+          // If we have no local tips but DB has them, restore from DB
+          if (Object.keys(userTips).length === 0 && row.tips) {
+            userTips = row.tips;
+            localStorage.setItem('wc2026_tips', JSON.stringify(userTips));
+          }
+        } else {
+          // Add to friends list
+          const serialized = serializeTips(row.tips);
+          dbFriends.push({
+            name: row.username,
+            tips: serialized
+          });
+        }
+      });
+
+      friends = dbFriends;
+      localStorage.setItem('wc2026_friends', JSON.stringify(friends));
+    }
+  } catch (e) {
+    console.error('Supabase sync error:', e);
+    showToast('同步数据库失败', true);
+  }
+}
+
 // Save User Tips
 function saveTips() {
   localStorage.setItem('wc2026_tips', JSON.stringify(userTips));
+
+  // Upsert to Supabase if configured
+  if (supabaseClient && username) {
+    supabaseClient
+      .from('predictions')
+      .upsert({
+        username: username,
+        tips: userTips,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'username' })
+      .then(({ error }) => {
+        if (error) console.error('Failed to sync with Supabase:', error);
+      });
+  }
 }
 
 // Fetch Results and Initialize
 async function init() {
   loadLocalStorage();
+  initSupabase();
   setupEventListeners();
-  
+
+
   // Check URL parameters for shared friend tips
   await checkSharedUrl();
-  
+
   await fetchMatches();
+
+  if (supabaseClient) {
+    await syncFromSupabase();
+  }
+
   renderApp();
 }
 
@@ -167,8 +254,13 @@ function setupEventListeners() {
   btnSaveUsername.addEventListener('click', () => {
     const val = usernameInput.value.trim();
     if (val) {
+      const oldName = username;
       username = val;
       localStorage.setItem('wc2026_username', username);
+
+      // If Supabase is running, write tips under the new name
+      saveTips();
+
       renderLeaderboard();
       showToast('用户名已更新！');
     }
@@ -178,12 +270,11 @@ function setupEventListeners() {
   btnShareTips.addEventListener('click', () => {
     const encoded = serializeTips(userTips);
     const shareUrl = `${window.location.origin}${window.location.pathname}?player=${encodeURIComponent(username)}&tips=${encoded}`;
-    
+
     navigator.clipboard.writeText(shareUrl).then(() => {
       showToast('分享链接已复制！快发送给好友吧。');
     }).catch(err => {
       console.error('Failed to copy share link:', err);
-      // Fallback
       alert(`这是您的分享链接：\n${shareUrl}`);
     });
   });
@@ -193,17 +284,16 @@ function setupEventListeners() {
     btnSyncResults.disabled = true;
     const oldText = btnSyncResults.innerHTML;
     btnSyncResults.innerHTML = '⚡ 同步中...';
-    
+
     try {
       const response = await fetch('https://worldcup26.ir/get/games');
       if (!response.ok) throw new Error('Network response not ok');
       const data = await response.json();
-      
+
       const apiGames = data.games.filter(g => g.type !== 'group');
       const apiGamesMap = {};
       apiGames.forEach(g => apiGamesMap[g.id] = g);
 
-      // Simple mapping of Round progression
       const nextMatchMap = {
         '73': { matchId: '90' }, '75': { matchId: '90' },
         '74': { matchId: '89' }, '77': { matchId: '89' },
@@ -228,7 +318,7 @@ function setupEventListeners() {
         const finished = g.finished === 'TRUE';
         const score1 = finished ? parseInt(g.home_score) : null;
         const score2 = finished ? parseInt(g.away_score) : null;
-        
+
         let winner = null;
         if (finished) {
           if (score1 > score2) {
@@ -259,7 +349,7 @@ function setupEventListeners() {
           const parts = g.local_date.split(' ');
           const dateParts = parts[0].split('/');
           const timeParts = parts[1].split(':');
-          
+
           const utcMs = Date.UTC(
             parseInt(dateParts[2]),
             parseInt(dateParts[0]) - 1,
@@ -267,11 +357,11 @@ function setupEventListeners() {
             parseInt(timeParts[0]),
             parseInt(timeParts[1])
           );
-          
+
           const offsetHours = timezoneOffsets[g.stadium_id] || 0;
           const kickoffDate = new Date(utcMs - offsetHours * 60 * 60 * 1000);
           kickoffIso = kickoffDate.toISOString();
-          
+
           formattedDate = kickoffDate.toLocaleString('zh-CN', {
             month: 'short',
             day: 'numeric',
@@ -302,6 +392,12 @@ function setupEventListeners() {
       updatedMatches.sort((a, b) => parseInt(a.id) - parseInt(b.id));
       matches = updatedMatches;
       localStorage.setItem('wc2026_matches_cached', JSON.stringify(matches));
+
+      // If database is active, pull friends tips too
+      if (supabaseClient) {
+        await syncFromSupabase();
+      }
+
       renderApp();
       showToast('赛果同步成功！');
     } catch (e) {
@@ -331,6 +427,8 @@ function setupEventListeners() {
   });
 }
 
+
+
 function getStageName(type) {
   switch (type) {
     case 'r32': return '32强赛';
@@ -349,7 +447,7 @@ async function fetchMatches() {
   if (cached) {
     matches = JSON.parse(cached);
   }
-  
+
   try {
     const response = await fetch('./results.json');
     if (!response.ok) throw new Error('Local results.json not found');
@@ -369,7 +467,7 @@ async function checkSharedUrl() {
   const urlParams = new URLSearchParams(window.location.search);
   const sharedPlayer = urlParams.get('player');
   const sharedTips = urlParams.get('tips');
-  
+
   if (sharedPlayer && sharedTips) {
     const confirmed = confirm(`是否将 “${sharedPlayer}” 添加到您的好友积分榜？`);
     if (confirmed) {
@@ -378,7 +476,7 @@ async function checkSharedUrl() {
       localStorage.setItem('wc2026_friends', JSON.stringify(friends));
       alert(`成功！已将 “${sharedPlayer}” 载入排行榜。`);
     }
-    
+
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 }
@@ -428,32 +526,28 @@ function calculatePlayerScore(playerTips) {
 
   matches.forEach(m => {
     if (m.status !== 'completed' || m.score1 === null || m.score2 === null) return;
-    
+
     const tip = playerTips[m.id];
     if (!tip || tip.score1 === null || tip.score1 === undefined || tip.score2 === null || tip.score2 === undefined) return;
-    
+
     const actual1 = m.score1;
     const actual2 = m.score2;
     const tip1 = tip.score1;
     const tip2 = tip.score2;
-    
-    // 1. Exact Match Score (+3 pts)
+
     if (actual1 === tip1 && actual2 === tip2) {
       points += 3;
       exactCount++;
-    } 
-    // 2. Correct Outcome & Goal Difference (+2 pts)
+    }
     else if ((actual1 - actual2 === tip1 - tip2) && Math.sign(actual1 - actual2) === Math.sign(tip1 - tip2)) {
       points += 2;
       correctCount++;
     }
-    // 3. Correct Outcome (+1 pt)
     else if (Math.sign(actual1 - actual2) === Math.sign(tip1 - tip2)) {
       points += 1;
       correctCount++;
     }
-    
-    // 4. Advancing Winner Bonus (+1 pt)
+
     const actualWinner = m.winner;
     let tipWinnerName = null;
     if (tip.winner === 'team1') tipWinnerName = m.team1;
@@ -462,7 +556,7 @@ function calculatePlayerScore(playerTips) {
       if (tip1 > tip2) tipWinnerName = m.team1;
       else if (tip1 < tip2) tipWinnerName = m.team2;
     }
-    
+
     if (actualWinner && tipWinnerName && actualWinner === tipWinnerName) {
       points += 1;
     }
@@ -480,7 +574,7 @@ function renderApp() {
 // Render Leaderboard
 function renderLeaderboard() {
   const leaderboard = [];
-  
+
   // Add self
   const selfScore = calculatePlayerScore(userTips);
   leaderboard.push({
@@ -490,7 +584,7 @@ function renderLeaderboard() {
     correctCount: selfScore.correctCount,
     isSelf: true
   });
-  
+
   // Add friends
   friends.forEach(f => {
     const friendTips = deserializeTips(f.tips);
@@ -504,23 +598,22 @@ function renderLeaderboard() {
       tipsEncoded: f.tips
     });
   });
-  
-  // Sort
+
   leaderboard.sort((a, b) => {
     if (b.points !== a.points) return b.points - a.points;
     if (b.exactCount !== a.exactCount) return b.exactCount - a.exactCount;
     return a.name.localeCompare(b.name);
   });
-  
+
   leaderboardList.innerHTML = '';
   leaderboard.forEach((player, idx) => {
     const li = document.createElement('div');
     li.className = `leaderboard-item ${player.isSelf ? 'current-user' : ''}`;
-    
-    const deleteBtnHtml = player.isSelf 
-      ? '' 
+
+    const deleteBtnHtml = player.isSelf
+      ? ''
       : `<span class="delete-friend" data-name="${player.name}" style="color: var(--text-muted); cursor: pointer; margin-left: 0.5rem; font-size: 1rem;" title="移除玩家">🗑️</span>`;
-    
+
     li.innerHTML = `
       <div class="player-info">
         <span class="player-rank">#${idx + 1}</span>
@@ -532,7 +625,7 @@ function renderLeaderboard() {
         <div class="player-accuracy">精准: ${player.exactCount} | 对方向: ${player.correctCount}</div>
       </div>
     `;
-    
+
     if (!player.isSelf) {
       li.querySelector('.delete-friend').addEventListener('click', (e) => {
         e.stopPropagation();
@@ -542,7 +635,7 @@ function renderLeaderboard() {
           renderLeaderboard();
         }
       });
-      
+
       li.addEventListener('click', () => {
         renderFriendTips(player.name, deserializeTips(player.tipsEncoded));
       });
@@ -555,7 +648,7 @@ function renderLeaderboard() {
       li.style.cursor = 'pointer';
       li.title = '正在查看您的预测';
     }
-    
+
     leaderboardList.appendChild(li);
   });
 }
@@ -569,25 +662,25 @@ function renderFriendTips(friendName, friendTips) {
 // Render Matches
 function renderMatches(displayTips = userTips, viewingPlayerName = null) {
   matchesContainer.innerHTML = '';
-  
+
   const titleBar = document.createElement('div');
   titleBar.style.padding = '0 1rem 1rem 1rem';
   titleBar.style.display = 'flex';
   titleBar.style.justifyContent = 'space-between';
   titleBar.style.alignItems = 'center';
-  
+
   const isViewingSelf = viewingPlayerName === null;
   const displayName = isViewingSelf ? '我的预测比分' : `${viewingPlayerName} 的预测`;
-  
+
   titleBar.innerHTML = `
     <h2 style="font-size: 1.25rem; font-weight: 700; color: ${isViewingSelf ? 'var(--text-primary)' : 'var(--accent-blue)'}">
       ${displayName} ${isViewingSelf ? '' : '<span style="font-size: 0.85rem; font-weight: normal; color: var(--text-muted)">（只读模式）</span>'}
     </h2>
     ${isViewingSelf ? '' : '<button class="btn btn-primary" id="btn-back-self" style="width: auto; padding: 0.4rem 1rem; font-size: 0.8rem;">返回我的预测</button>'}
   `;
-  
+
   matchesContainer.appendChild(titleBar);
-  
+
   if (!isViewingSelf) {
     document.getElementById('btn-back-self').addEventListener('click', () => {
       renderMatches();
@@ -605,29 +698,29 @@ function renderMatches(displayTips = userTips, viewingPlayerName = null) {
 function renderListView(displayTips, editable) {
   const container = document.createElement('div');
   container.className = 'list-view-container';
-  
+
   const stages = {};
   matches.forEach(m => {
     if (!stages[m.stage]) stages[m.stage] = [];
     stages[m.stage].push(m);
   });
-  
+
   for (const stageName in stages) {
     const section = document.createElement('div');
     section.className = 'round-section';
     section.innerHTML = `<h3 class="round-title">${stageName}</h3>`;
-    
+
     const list = document.createElement('div');
     list.className = 'matches-list';
     stages[stageName].forEach(m => {
       const card = createMatchCard(m, displayTips, editable);
       list.appendChild(card);
     });
-    
+
     section.appendChild(list);
     container.appendChild(section);
   }
-  
+
   matchesContainer.appendChild(container);
 }
 
@@ -635,7 +728,7 @@ function renderListView(displayTips, editable) {
 function renderBracketView(displayTips, editable) {
   const container = document.createElement('div');
   container.className = 'bracket-view-container';
-  
+
   const bracketRounds = [
     { type: 'r32', name: '32强赛' },
     { type: 'r16', name: '16强赛' },
@@ -643,11 +736,11 @@ function renderBracketView(displayTips, editable) {
     { type: 'sf', name: '半决赛' },
     { type: 'final_third', name: '决赛对阵' }
   ];
-  
+
   bracketRounds.forEach(round => {
     const col = document.createElement('div');
     col.className = 'bracket-column';
-    
+
     let roundMatches = [];
     if (round.type === 'final_third') {
       roundMatches = matches.filter(m => m.type === 'final' || m.type === 'third');
@@ -655,7 +748,7 @@ function renderBracketView(displayTips, editable) {
     } else {
       roundMatches = matches.filter(m => m.type === round.type);
     }
-    
+
     const colTitle = document.createElement('div');
     colTitle.style.fontWeight = '800';
     colTitle.style.fontSize = '1.1rem';
@@ -670,10 +763,10 @@ function renderBracketView(displayTips, editable) {
       const card = createMatchCard(m, displayTips, editable);
       col.appendChild(card);
     });
-    
+
     container.appendChild(col);
   });
-  
+
   matchesContainer.appendChild(container);
 }
 
@@ -682,27 +775,27 @@ function createMatchCard(match, displayTips, editable) {
   const card = document.createElement('div');
   card.className = `match-card ${match.status === 'completed' ? 'completed' : ''}`;
   card.dataset.id = match.id;
-  
+
   const tip = displayTips[match.id] || { score1: null, score2: null, winner: null };
   const flag1 = getFlag(match.team1);
   const flag2 = getFlag(match.team2);
-  
+
   const s1Val = (tip.score1 !== null && tip.score1 !== undefined) ? tip.score1 : '';
   const s2Val = (tip.score2 !== null && tip.score2 !== undefined) ? tip.score2 : '';
-  
+
   const isDraw = s1Val !== '' && s2Val !== '' && parseInt(s1Val) === parseInt(s2Val);
-  
+
   // Deadline check
   const isPastDeadline = match.kickoff ? (new Date() > new Date(match.kickoff)) : false;
   const canEdit = editable && match.status !== 'completed' && !isPastDeadline;
-  
+
   let pointsBadgeHtml = '';
   let accuracyBadgeHtml = '';
-  
+
   if (match.status === 'completed' && match.score1 !== null && match.score2 !== null) {
     const calc = calculateSingleMatchPoints(match, tip);
     pointsBadgeHtml = `<div class="score-earned-pts pts-${calc.points}">+${calc.points} 分</div>`;
-    
+
     let accuracyClass = 'badge-wrong';
     let accuracyText = '错误';
     if (calc.exact) {
@@ -712,10 +805,10 @@ function createMatchCard(match, displayTips, editable) {
       accuracyClass = 'badge-correct';
       accuracyText = '对方向';
     }
-    
+
     accuracyBadgeHtml = `<span class="score-badge ${accuracyClass}">${accuracyText}</span>`;
   }
-  
+
   // Create status badge
   let statusBadge = '';
   if (match.status === 'completed') {
@@ -725,11 +818,11 @@ function createMatchCard(match, displayTips, editable) {
   } else {
     statusBadge = `<span style="background: rgba(59,130,246,0.1); color: var(--accent-blue); padding: 2px 6px; border-radius: 4px; font-weight: 600;">🕒 预测中</span>`;
   }
-  
+
   const advSelectorVisibleStyle = isDraw ? 'display: flex;' : 'display: none;';
   const isW1Active = tip.winner === 'team1';
   const isW2Active = tip.winner === 'team2';
-  
+
   card.innerHTML = `
     <div class="match-meta">
       <span class="match-stage">第 ${match.id} 场 &bull; ${match.stage}</span>
@@ -801,18 +894,18 @@ function createMatchCard(match, displayTips, editable) {
     const advSection = card.querySelector('.advancing-section');
     const btnAdv1 = card.querySelector('.btn-team1');
     const btnAdv2 = card.querySelector('.btn-team2');
-    
+
     const updateTipState = () => {
       const v1 = input1.value !== '' ? parseInt(input1.value) : null;
       const v2 = input2.value !== '' ? parseInt(input2.value) : null;
-      
+
       if (!userTips[match.id]) {
         userTips[match.id] = { score1: null, score2: null, winner: null };
       }
-      
+
       userTips[match.id].score1 = v1;
       userTips[match.id].score2 = v2;
-      
+
       if (v1 !== null && v2 !== null && v1 === v2) {
         advSection.style.display = 'flex';
         if (!userTips[match.id].winner) {
@@ -826,14 +919,14 @@ function createMatchCard(match, displayTips, editable) {
         btnAdv1.classList.remove('active');
         btnAdv2.classList.remove('active');
       }
-      
+
       saveTips();
       renderLeaderboard();
     };
 
     input1.addEventListener('input', updateTipState);
     input2.addEventListener('input', updateTipState);
-    
+
     btnAdv1.addEventListener('click', () => {
       userTips[match.id].winner = 'team1';
       btnAdv1.classList.add('active');
@@ -841,7 +934,7 @@ function createMatchCard(match, displayTips, editable) {
       saveTips();
       renderLeaderboard();
     });
-    
+
     btnAdv2.addEventListener('click', () => {
       userTips[match.id].winner = 'team2';
       btnAdv2.classList.add('active');
@@ -859,7 +952,7 @@ function calculateSingleMatchPoints(match, tip) {
   if (match.status !== 'completed' || match.score1 === null || match.score2 === null) {
     return { points: 0, exact: false };
   }
-  
+
   if (!tip || tip.score1 === null || tip.score1 === undefined || tip.score2 === null || tip.score2 === undefined) {
     return { points: 0, exact: false };
   }
@@ -868,21 +961,21 @@ function calculateSingleMatchPoints(match, tip) {
   const actual2 = match.score2;
   const tip1 = tip.score1;
   const tip2 = tip.score2;
-  
+
   let points = 0;
   let exact = false;
-  
+
   if (actual1 === tip1 && actual2 === tip2) {
     points += 3;
     exact = true;
-  } 
+  }
   else if ((actual1 - actual2 === tip1 - tip2) && Math.sign(actual1 - actual2) === Math.sign(tip1 - tip2)) {
     points += 2;
   }
   else if (Math.sign(actual1 - actual2) === Math.sign(tip1 - tip2)) {
     points += 1;
   }
-  
+
   const actualWinner = match.winner;
   let tipWinnerName = null;
   if (tip.winner === 'team1') tipWinnerName = match.team1;
@@ -891,7 +984,7 @@ function calculateSingleMatchPoints(match, tip) {
     if (tip1 > tip2) tipWinnerName = match.team1;
     else if (tip1 < tip2) tipWinnerName = match.team2;
   }
-  
+
   if (actualWinner && tipWinnerName && actualWinner === tipWinnerName) {
     points += 1;
   }
@@ -919,16 +1012,16 @@ function showToast(message, isError = false) {
     toast.style.opacity = '0';
     document.body.appendChild(toast);
   }
-  
+
   toast.style.backgroundColor = isError ? 'var(--score-wrong)' : 'var(--bg-secondary)';
   toast.style.border = `1px solid ${isError ? 'transparent' : 'var(--accent-blue)'}`;
   toast.textContent = message;
-  
+
   setTimeout(() => {
     toast.style.transform = 'translateY(0)';
     toast.style.opacity = '1';
   }, 50);
-  
+
   setTimeout(() => {
     toast.style.transform = 'translateY(10px)';
     toast.style.opacity = '0';

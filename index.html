@@ -7,6 +7,7 @@
   <title>2026世界杯淘汰赛比分竞猜</title>
   <meta name="description" content="预测2026年美加墨世界杯淘汰赛比分与晋级球队。支持生成好友排行榜，纯前端免服务器，适配手机和电脑。">
   <link rel="stylesheet" href="./style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -122,6 +123,50 @@
       <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
         * 注：淘汰赛比分竞猜以加时赛结束（120分钟）时的比分为准。如进入点球大战，完场比分按平局（如1-1）计算，“晋级球队”预测选项将决定点球大战胜出者的积分奖励。
       </p>
+    </div>
+  </div>
+
+  <!-- Database Settings Modal -->
+  <div class="modal" id="db-modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h2>数据库配置 (Supabase)</h2>
+        <button class="close-modal" id="close-db-modal">&times;</button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.4;">
+          配置您自己的 Supabase 数据库，与好友实时共享预测数据及排行榜。留空则自动使用本地缓存和链接分享模式。
+        </p>
+        
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <label style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Supabase API URL</label>
+          <input type="text" id="db-url-input" class="score-input" style="width: 100%; height: 40px; text-align: left; padding: 0 0.8rem; font-size: 0.9rem; font-weight: normal; border-radius: 8px;" placeholder="https://your-project.supabase.co">
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <label style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">Supabase Anon Key</label>
+          <input type="text" id="db-key-input" class="score-input" style="width: 100%; height: 40px; text-align: left; padding: 0 0.8rem; font-size: 0.9rem; font-weight: normal; border-radius: 8px;" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+          <button class="btn btn-primary" id="btn-save-db" style="flex: 1;">保存并连接</button>
+          <button class="btn" id="btn-clear-db" style="width: auto;">清除配置</button>
+        </div>
+
+        <div style="border-top: 1px dashed var(--border-color); padding-top: 1rem; margin-top: 0.5rem;">
+          <h4 style="font-size: 0.9rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Table 创建指引 (SQL Editor):</h4>
+          <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+            请在您的 Supabase 控制面板中打开 SQL Editor，复制并执行以下命令创建数据表：
+          </p>
+          <pre id="sql-block" style="background: var(--bg-primary); border: 1px solid var(--border-color); padding: 0.8rem; border-radius: 8px; font-family: monospace; font-size: 0.8rem; color: var(--accent-emerald); overflow-x: auto; user-select: all; cursor: pointer;" title="点击全部复制">create table predictions (
+  username text primary key,
+  tips jsonb not null,
+  updated_at timestamp with time zone default now() not null
+);
+
+alter table predictions disable row level security;</pre>
+        </div>
+      </div>
     </div>
   </div>
 
