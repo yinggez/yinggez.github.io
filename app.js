@@ -165,6 +165,8 @@ function loadLocalStorage() {
 }
 
 // Initialize Supabase Client
+let syncInProgress = false; // Add this flag to prevent concurrent syncs
+
 function initSupabase() {
   const url = localStorage.getItem('wc2026_supabase_url') || defaultSupabaseUrl;
   const key = localStorage.getItem('wc2026_supabase_key') || defaultSupabaseKey;
@@ -195,8 +197,17 @@ function initSupabase() {
             authLoggedIn.style.display = 'none';
             userEmailDisplay.textContent = '';
           }
-          await syncFromSupabase();
-          renderLeaderboard();
+
+          // Only sync if not already syncing
+          if (!syncInProgress) {
+            syncInProgress = true;
+            try {
+              await syncFromSupabase();
+            } finally {
+              syncInProgress = false;
+            }
+            renderLeaderboard();
+          }
         });
       } else {
         console.warn('Supabase library not loaded.');
@@ -342,14 +353,19 @@ async function init() {
   initSupabase();
   setupEventListeners();
 
-
   // Check URL parameters for shared friend tips
   await checkSharedUrl();
 
   await fetchMatches();
 
-  if (supabaseClient) {
-    await syncFromSupabase();
+  // Only sync manually if not already syncing (auth listener will handle it)
+  if (supabaseClient && !syncInProgress) {
+    syncInProgress = true;
+    try {
+      await syncFromSupabase();
+    } finally {
+      syncInProgress = false;
+    }
   }
 
   renderApp();
