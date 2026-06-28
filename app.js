@@ -288,7 +288,7 @@ async function syncFromSupabase() {
     localStorage.setItem('wc2026_friends', JSON.stringify(friends));
   } catch (e) {
     console.error('Supabase sync error:', e);
-    // Don't show error toast on initial load - just silently fail
+    // Silent fail on logout
   }
 }
 
@@ -301,49 +301,68 @@ function saveTipsLocal() {
 async function saveTips() {
   saveTipsLocal();
 
-  if (supabaseClient) {
-    try {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session?.user) {
-        const oldText = btnSavePredictions ? btnSavePredictions.innerHTML : '💾 保存预测';
-        if (btnSavePredictions) {
-          btnSavePredictions.innerHTML = '💾 保存中...';
-          btnSavePredictions.disabled = true;
-        }
-
-        const { error } = await supabaseClient
-          .from('predictions')
-          .upsert({
-            user_id: session.user.id,
-            username: username,
-            tips: userTips,
-            updated_at: new Date().toISOString()
-          }, { onConflict: 'user_id' });
-
-        if (btnSavePredictions) {
-          btnSavePredictions.innerHTML = oldText;
-          btnSavePredictions.disabled = false;
-        }
-
-        if (error) {
-          console.error('Failed to sync with Supabase:', error);
-          showToast('同步数据库失败，请检查数据库配置与 RLS 权限', true);
-        } else {
-          showToast('预测数据已成功保存至云端数据库！');
-        }
-      } else {
-        showToast('登录后才能保存到云端', true);
-      }
-    } catch (e) {
-      console.error('Failed to get session for saveTips:', e);
-      showToast('保存失败', true);
-      if (btnSavePredictions) {
-        btnSavePredictions.innerHTML = '💾 保存预测';
-        btnSavePredictions.disabled = false;
-      }
-    }
-  } else {
+  if (!supabaseClient) {
     showToast('本地数据已保存');
+    return;
+  }
+
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session?.user) {
+      showToast('登录后才能保存到云端', true);
+      return;
+    }
+
+    const oldText = btnSavePredictions ? btnSavePredictions.innerHTML : '💾 保存预测';
+    if (btnSavePredictions) {
+      btnSavePredictions.innerHTML = '💾 保存中...';
+      btnSavePredictions.disabled = true;
+    }
+
+    // Prepare data to send
+    const dataToSave = {
+      user_id: session.user.id,
+      username: username,
+      tips: userTips,
+      updated_at: new Date().toISOString()
+    };
+
+    console.log('Saving tips:', dataToSave);
+
+    const { data, error } = await supabaseClient
+      .from('predictions')
+      .upsert(dataToSave, { onConflict: 'user_id' });
+
+    if (btnSavePredictions) {
+      btnSavePredictions.innerHTML = oldText;
+      btnSavePredictions.disabled = false;
+    }
+
+    if (error) {
+      console.error('Supabase save error:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+
+      // Check if it's an RLS issue
+      if (error.message && error.message.includes('policy')) {
+        showToast('保存失败：请检查 Supabase RLS 权限设置', true);
+      } else if (error.message && error.message.includes('row-level security')) {
+        showToast('保存失败：权限不足（RLS 策略限制）', true);
+      } else {
+        showToast(`保存失败：${error.message}`, true);
+      }
+    } else {
+      showToast('预测数据已成功保存至云端数据库！');
+    }
+  } catch (e) {
+    console.error('Failed to save tips:', e);
+
+    if (btnSavePredictions) {
+      btnSavePredictions.innerHTML = oldText;
+      btnSavePredictions.disabled = false;
+    }
+
+    showToast('保存失败', true);
   }
 }
 
@@ -637,11 +656,26 @@ function setupEventListeners() {
   if (btnAuthLogout) {
     btnAuthLogout.addEventListener('click', async () => {
       try {
+        btnAuthLogout.disabled = true;
         const { error } = await supabaseClient.auth.signOut();
         if (error) throw error;
+
+        // Clear any cached session data
+        userTips = {};
+        friends = [];
+        username = '玩家 1';
+        usernameInput.value = username;
+        localStorage.removeItem('wc2026_username');
+        localStorage.removeItem('wc2026_tips');
+        localStorage.removeItem('wc2026_friends');
+
         showToast('已登出');
+        // The auth state listener will handle the UI update
       } catch (err) {
         console.error('Logout failed:', err);
+        showToast('登出失败', true);
+      } finally {
+        btnAuthLogout.disabled = false;
       }
     });
   }
