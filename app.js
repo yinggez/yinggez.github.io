@@ -145,6 +145,7 @@ const authErrorMsg = document.getElementById('auth-error-msg');
 const authLoggedOut = document.getElementById('auth-logged-out');
 const authLoggedIn = document.getElementById('auth-logged-in');
 const userEmailDisplay = document.getElementById('user-email-display');
+const btnSavePredictions = document.getElementById('btn-save-predictions');
 
 
 // Load Data from Local Storage
@@ -261,32 +262,58 @@ async function syncFromSupabase() {
   }
 }
 
-// Save User Tips
-async function saveTips() {
+// Save User Tips locally
+function saveTipsLocal() {
   localStorage.setItem('wc2026_tips', JSON.stringify(userTips));
+}
 
-  // Upsert to Supabase if configured and logged in
+// Save User Tips both locally and to Supabase database
+async function saveTips() {
+  saveTipsLocal();
+
   if (supabaseClient) {
     try {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session?.user) {
-        supabaseClient
+        const oldText = btnSavePredictions ? btnSavePredictions.innerHTML : '💾 保存预测';
+        if (btnSavePredictions) {
+          btnSavePredictions.innerHTML = '💾 保存中...';
+          btnSavePredictions.disabled = true;
+        }
+
+        const { error } = await supabaseClient
           .from('predictions')
           .upsert({
             user_id: session.user.id,
             username: username,
             tips: userTips,
             updated_at: new Date().toISOString()
-          }, { onConflict: 'user_id' })
-          .then(({ error }) => {
-            if (error) console.error('Failed to sync with Supabase:', error);
-          });
+          }, { onConflict: 'user_id' });
+
+        if (btnSavePredictions) {
+          btnSavePredictions.innerHTML = oldText;
+          btnSavePredictions.disabled = false;
+        }
+
+        if (error) {
+          console.error('Failed to sync with Supabase:', error);
+          showToast('同步数据库失败，请检查数据库配置与 RLS 权限', true);
+        } else {
+          showToast('预测数据已成功保存至云端数据库！');
+        }
       } else {
-        console.log('User is not logged in. Saved locally only.');
+        showToast('登录后才能保存到云端', true);
       }
     } catch (e) {
       console.error('Failed to get session for saveTips:', e);
+      showToast('保存失败', true);
+      if (btnSavePredictions) {
+        btnSavePredictions.innerHTML = '💾 保存预测';
+        btnSavePredictions.disabled = false;
+      }
     }
+  } else {
+    showToast('本地数据已保存');
   }
 }
 
@@ -581,6 +608,12 @@ function setupEventListeners() {
       } catch (err) {
         console.error('Logout failed:', err);
       }
+    });
+  }
+
+  if (btnSavePredictions) {
+    btnSavePredictions.addEventListener('click', () => {
+      saveTips();
     });
   }
 
@@ -1081,7 +1114,7 @@ function createMatchCard(match, displayTips, editable) {
         btnAdv2.classList.remove('active');
       }
 
-      saveTips();
+      saveTipsLocal();
       renderLeaderboard();
     };
 
@@ -1092,7 +1125,7 @@ function createMatchCard(match, displayTips, editable) {
       userTips[match.id].winner = 'team1';
       btnAdv1.classList.add('active');
       btnAdv2.classList.remove('active');
-      saveTips();
+      saveTipsLocal();
       renderLeaderboard();
     });
 
@@ -1100,7 +1133,7 @@ function createMatchCard(match, displayTips, editable) {
       userTips[match.id].winner = 'team2';
       btnAdv2.classList.add('active');
       btnAdv1.classList.remove('active');
-      saveTips();
+      saveTipsLocal();
       renderLeaderboard();
     });
   }
