@@ -239,19 +239,20 @@ async function syncFromSupabase() {
             localStorage.setItem('wc2026_username', username);
           }
           // If we have no local tips but DB has them, restore from DB
+          // If we have no local tips but DB has them, restore from DB
           if (Object.keys(userTips).length === 0 && row.tips) {
-            userTips = row.tips;
-
-            // Ensure tips have winner field set
-            Object.keys(userTips).forEach(matchId => {
-              if (!userTips[matchId].winner && userTips[matchId].score1 !== null && userTips[matchId].score2 !== null) {
-                const s1 = userTips[matchId].score1;
-                const s2 = userTips[matchId].score2;
-                userTips[matchId].winner = s1 > s2 ? 'team1' : (s2 > s1 ? 'team2' : null);
+            try {
+              // Ensure row.tips is a valid object
+              if (typeof row.tips === 'string') {
+                userTips = JSON.parse(row.tips);
+              } else {
+                userTips = row.tips;
               }
-            });
-
-            localStorage.setItem('wc2026_tips', JSON.stringify(userTips));
+              localStorage.setItem('wc2026_tips', JSON.stringify(userTips));
+            } catch (parseError) {
+              console.error('Failed to parse tips from database:', parseError);
+              // Fallback: don't load corrupted data
+            }
           }
         } else {
           // Add to friends list
