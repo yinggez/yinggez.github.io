@@ -227,18 +227,41 @@ function initSupabase() {
 
 // Sync predictions from Supabase database
 async function syncFromSupabase() {
-  if (!supabaseClient) return;
+  console.log('syncFromSupabase called, syncInProgress:', syncInProgress);
+
+  if (!supabaseClient) {
+    console.log('No supabaseClient');
+    return;
+  }
+
+  if (syncInProgress) {
+    console.log('Sync already in progress, skipping');
+    return;
+  }
+
+  syncInProgress = true;
+  const syncTimeout = setTimeout(() => {
+    console.error('Sync timeout - forcing reset');
+    syncInProgress = false;
+  }, 10000); // 10 second timeout
 
   try {
     const { data: { session } } = await supabaseClient.auth.getSession();
     const currentUserId = session?.user?.id;
 
+    console.log('Current user ID:', currentUserId);
+
     // Only sync if user is logged in
     if (!currentUserId) {
+      console.log('No user logged in, clearing friends');
       friends = [];
       localStorage.setItem('wc2026_friends', JSON.stringify(friends));
+      clearTimeout(syncTimeout);
+      syncInProgress = false;
       return;
     }
+
+    console.log('Fetching user record for:', currentUserId);
 
     // Only fetch the current user's own record
     const { data, error } = await supabaseClient
@@ -247,17 +270,21 @@ async function syncFromSupabase() {
       .eq('user_id', currentUserId)
       .single();
 
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows found
+    console.log('Fetch user record - data:', data);
+    console.log('Fetch user record - error:', error);
+
+    if (error && error.code !== 'PGRST116') throw error;
 
     if (data) {
-      // Sync nickname if database has a different username
+      console.log('Updating user data from DB');
       if (data.username && data.username !== username) {
+        console.log('Username changed from', username, 'to', data.username);
         username = data.username;
         usernameInput.value = username;
         localStorage.setItem('wc2026_username', username);
       }
-      // If we have no local tips but DB has them, restore from DB
       if (Object.keys(userTips).length === 0 && data.tips) {
+        console.log('Restoring tips from DB');
         try {
           if (typeof data.tips === 'string') {
             userTips = JSON.parse(data.tips);
@@ -271,11 +298,16 @@ async function syncFromSupabase() {
       }
     }
 
+    console.log('Fetching friends data');
+
     // Always fetch all friends' data (everyone except current user)
     const { data: allUsers, error: friendsError } = await supabaseClient
       .from('predictions')
       .select('user_id, username, tips')
       .neq('user_id', currentUserId);
+
+    console.log('Fetch friends - data count:', allUsers?.length);
+    console.log('Fetch friends - error:', friendsError);
 
     if (friendsError && friendsError.code !== 'PGRST116') throw friendsError;
 
@@ -285,14 +317,21 @@ async function syncFromSupabase() {
         tips: typeof row.tips === 'string' ? row.tips : serializeTips(row.tips)
       }));
       friends = dbFriends;
+      console.log('Friends updated:', friends.length);
     } else {
       friends = [];
+      console.log('No friends found');
     }
 
     localStorage.setItem('wc2026_friends', JSON.stringify(friends));
+    console.log('syncFromSupabase completed successfully');
   } catch (e) {
     console.error('Supabase sync error:', e);
-    // Silent fail on logout
+    console.error('Error stack:', e.stack);
+  } finally {
+    clearTimeout(syncTimeout);
+    syncInProgress = false;
+    console.log('syncInProgress reset to false');
   }
 }
 
