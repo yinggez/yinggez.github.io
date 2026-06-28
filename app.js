@@ -227,7 +227,7 @@ async function syncFromSupabase() {
     if (data) {
       const dbFriends = [];
       data.forEach(row => {
-        const isSelf = currentUserId 
+        const isSelf = currentUserId
           ? (row.user_id === currentUserId)
           : (row.username === username);
 
@@ -241,6 +241,16 @@ async function syncFromSupabase() {
           // If we have no local tips but DB has them, restore from DB
           if (Object.keys(userTips).length === 0 && row.tips) {
             userTips = row.tips;
+
+            // Ensure tips have winner field set
+            Object.keys(userTips).forEach(matchId => {
+              if (!userTips[matchId].winner && userTips[matchId].score1 !== null && userTips[matchId].score2 !== null) {
+                const s1 = userTips[matchId].score1;
+                const s2 = userTips[matchId].score2;
+                userTips[matchId].winner = s1 > s2 ? 'team1' : (s2 > s1 ? 'team2' : null);
+              }
+            });
+
             localStorage.setItem('wc2026_tips', JSON.stringify(userTips));
           }
         } else {
