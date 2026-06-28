@@ -194,6 +194,7 @@ function initSupabase() {
             authLoggedIn.style.display = 'none';
             userEmailDisplay.textContent = '';
           }
+          await syncFromSupabase();
           renderLeaderboard();
         });
       } else {
@@ -213,16 +214,29 @@ async function syncFromSupabase() {
   if (!supabaseClient) return;
 
   try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const currentUserId = session?.user?.id;
+
     const { data, error } = await supabaseClient
       .from('predictions')
-      .select('username, tips, updated_at');
+      .select('user_id, username, tips, updated_at');
 
     if (error) throw error;
 
     if (data) {
       const dbFriends = [];
       data.forEach(row => {
-        if (row.username === username) {
+        const isSelf = currentUserId 
+          ? (row.user_id === currentUserId)
+          : (row.username === username);
+
+        if (isSelf) {
+          // Sync nickname if database has a different username
+          if (row.username && row.username !== username) {
+            username = row.username;
+            usernameInput.value = username;
+            localStorage.setItem('wc2026_username', username);
+          }
           // If we have no local tips but DB has them, restore from DB
           if (Object.keys(userTips).length === 0 && row.tips) {
             userTips = row.tips;
@@ -248,21 +262,31 @@ async function syncFromSupabase() {
 }
 
 // Save User Tips
-function saveTips() {
+async function saveTips() {
   localStorage.setItem('wc2026_tips', JSON.stringify(userTips));
 
-  // Upsert to Supabase if configured
-  if (supabaseClient && username) {
-    supabaseClient
-      .from('predictions')
-      .upsert({
-        username: username,
-        tips: userTips,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'username' })
-      .then(({ error }) => {
-        if (error) console.error('Failed to sync with Supabase:', error);
-      });
+  // Upsert to Supabase if configured and logged in
+  if (supabaseClient) {
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session?.user) {
+        supabaseClient
+          .from('predictions')
+          .upsert({
+            user_id: session.user.id,
+            username: username,
+            tips: userTips,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'user_id' })
+          .then(({ error }) => {
+            if (error) console.error('Failed to sync with Supabase:', error);
+          });
+      } else {
+        console.log('User is not logged in. Saved locally only.');
+      }
+    } catch (e) {
+      console.error('Failed to get session for saveTips:', e);
+    }
   }
 }
 
