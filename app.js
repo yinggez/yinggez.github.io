@@ -164,9 +164,9 @@ function loadLocalStorage() {
   }
 }
 
-// Initialize Supabase Client
-let syncInProgress = false; // Add this flag to prevent concurrent syncs
+let syncInProgress = false; // Add this at the top with other globals (around line 121)
 
+// Initialize Supabase Client
 function initSupabase() {
   const url = localStorage.getItem('wc2026_supabase_url') || defaultSupabaseUrl;
   const key = localStorage.getItem('wc2026_supabase_key') || defaultSupabaseKey;
@@ -179,6 +179,8 @@ function initSupabase() {
 
         // Listen for authentication state changes
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
+          console.log('Auth state changed:', event, session?.user?.email);
+
           if (session?.user) {
             authLoggedOut.style.display = 'none';
             authLoggedIn.style.display = 'flex';
@@ -192,20 +194,26 @@ function initSupabase() {
               usernameInput.value = username;
               localStorage.setItem('wc2026_username', username);
             }
+
+            // Sync only on login or refresh (not on every state change)
+            if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+              if (!syncInProgress) {
+                syncInProgress = true;
+                try {
+                  await syncFromSupabase();
+                  renderLeaderboard();
+                } finally {
+                  syncInProgress = false;
+                }
+              }
+            }
           } else {
             authLoggedOut.style.display = 'flex';
             authLoggedIn.style.display = 'none';
             userEmailDisplay.textContent = '';
-          }
 
-          // Only sync if not already syncing
-          if (!syncInProgress) {
-            syncInProgress = true;
-            try {
-              await syncFromSupabase();
-            } finally {
-              syncInProgress = false;
-            }
+            // Clear friends on logout
+            friends = [];
             renderLeaderboard();
           }
         });
@@ -377,13 +385,18 @@ async function init() {
 
   await fetchMatches();
 
-  // Only sync manually if not already syncing (auth listener will handle it)
-  if (supabaseClient && !syncInProgress) {
-    syncInProgress = true;
-    try {
-      await syncFromSupabase();
-    } finally {
-      syncInProgress = false;
+  // Wait a bit for auth state to settle, then sync
+  if (supabaseClient) {
+    // Give the auth listener time to fire first
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    if (!syncInProgress) {
+      syncInProgress = true;
+      try {
+        await syncFromSupabase();
+      } finally {
+        syncInProgress = false;
+      }
     }
   }
 
