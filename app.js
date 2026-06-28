@@ -1055,11 +1055,23 @@ function createMatchCard(match, displayTips, editable) {
       userTips[match.id].score1 = v1;
       userTips[match.id].score2 = v2;
 
-      if (v1 !== null && v2 !== null && v1 === v2) {
-        advSection.style.display = 'flex';
-        if (!userTips[match.id].winner) {
-          userTips[match.id].winner = 'team1';
-          btnAdv1.classList.add('active');
+      if (v1 !== null && v2 !== null) {
+        if (v1 === v2) {
+          advSection.style.display = 'flex';
+          if (!userTips[match.id].winner || (userTips[match.id].winner !== 'team1' && userTips[match.id].winner !== 'team2')) {
+            userTips[match.id].winner = 'team1';
+          }
+          if (userTips[match.id].winner === 'team1') {
+            btnAdv1.classList.add('active');
+            btnAdv2.classList.remove('active');
+          } else {
+            btnAdv2.classList.add('active');
+            btnAdv1.classList.remove('active');
+          }
+        } else {
+          advSection.style.display = 'none';
+          userTips[match.id].winner = v1 > v2 ? 'team1' : 'team2';
+          btnAdv1.classList.remove('active');
           btnAdv2.classList.remove('active');
         }
       } else {
