@@ -610,15 +610,10 @@ function renderLeaderboard() {
     const li = document.createElement('div');
     li.className = `leaderboard-item ${player.isSelf ? 'current-user' : ''}`;
 
-    const deleteBtnHtml = player.isSelf
-      ? ''
-      : `<span class="delete-friend" data-name="${player.name}" style="color: var(--text-muted); cursor: pointer; margin-left: 0.5rem; font-size: 1rem;" title="移除玩家">🗑️</span>`;
-
     li.innerHTML = `
       <div class="player-info">
         <span class="player-rank">#${idx + 1}</span>
         <span class="player-name" title="${player.name}">${player.name}</span>
-        ${deleteBtnHtml}
       </div>
       <div class="player-stats">
         <div class="player-points">${player.points} 分</div>
@@ -627,15 +622,6 @@ function renderLeaderboard() {
     `;
 
     if (!player.isSelf) {
-      li.querySelector('.delete-friend').addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (confirm(`确定要从排行榜中移除 ${player.name} 吗？`)) {
-          friends = friends.filter(f => f.name !== player.name);
-          localStorage.setItem('wc2026_friends', JSON.stringify(friends));
-          renderLeaderboard();
-        }
-      });
-
       li.addEventListener('click', () => {
         renderFriendTips(player.name, deserializeTips(player.tipsEncoded));
       });
