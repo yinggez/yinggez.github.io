@@ -218,58 +218,66 @@ async function syncFromSupabase() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     const currentUserId = session?.user?.id;
 
+    // Only sync if user is logged in
+    if (!currentUserId) {
+      friends = [];
+      localStorage.setItem('wc2026_friends', JSON.stringify(friends));
+      return;
+    }
+
+    // Only fetch the current user's own record
     const { data, error } = await supabaseClient
       .from('predictions')
-      .select('user_id, username, tips, updated_at');
+      .select('user_id, username, tips, updated_at')
+      .eq('user_id', currentUserId)
+      .single();
 
-    if (error) throw error;
+    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows found
 
     if (data) {
-      const dbFriends = [];
-      data.forEach(row => {
-        const isSelf = currentUserId
-          ? (row.user_id === currentUserId)
-          : (row.username === username);
-
-        if (isSelf) {
-          // Sync nickname if database has a different username
-          if (row.username && row.username !== username) {
-            username = row.username;
-            usernameInput.value = username;
-            localStorage.setItem('wc2026_username', username);
+      // Sync nickname if database has a different username
+      if (data.username && data.username !== username) {
+        username = data.username;
+        usernameInput.value = username;
+        localStorage.setItem('wc2026_username', username);
+      }
+      // If we have no local tips but DB has them, restore from DB
+      if (Object.keys(userTips).length === 0 && data.tips) {
+        try {
+          if (typeof data.tips === 'string') {
+            userTips = JSON.parse(data.tips);
+          } else {
+            userTips = data.tips;
           }
-          // If we have no local tips but DB has them, restore from DB
-          // If we have no local tips but DB has them, restore from DB
-          if (Object.keys(userTips).length === 0 && row.tips) {
-            try {
-              // Ensure row.tips is a valid object
-              if (typeof row.tips === 'string') {
-                userTips = JSON.parse(row.tips);
-              } else {
-                userTips = row.tips;
-              }
-              localStorage.setItem('wc2026_tips', JSON.stringify(userTips));
-            } catch (parseError) {
-              console.error('Failed to parse tips from database:', parseError);
-              // Fallback: don't load corrupted data
-            }
-          }
-        } else {
-          // Add to friends list
-          const serialized = serializeTips(row.tips);
-          dbFriends.push({
-            name: row.username,
-            tips: serialized
-          });
+          localStorage.setItem('wc2026_tips', JSON.stringify(userTips));
+        } catch (parseError) {
+          console.error('Failed to parse tips:', parseError);
         }
-      });
-
-      friends = dbFriends;
-      localStorage.setItem('wc2026_friends', JSON.stringify(friends));
+      }
     }
+
+    // Always fetch all friends' data (everyone except current user)
+    const { data: allUsers, error: friendsError } = await supabaseClient
+      .from('predictions')
+      .select('user_id, username, tips')
+      .neq('user_id', currentUserId);
+
+    if (friendsError && friendsError.code !== 'PGRST116') throw friendsError;
+
+    if (allUsers && allUsers.length > 0) {
+      const dbFriends = allUsers.map(row => ({
+        name: row.username,
+        tips: typeof row.tips === 'string' ? row.tips : serializeTips(row.tips)
+      }));
+      friends = dbFriends;
+    } else {
+      friends = [];
+    }
+
+    localStorage.setItem('wc2026_friends', JSON.stringify(friends));
   } catch (e) {
     console.error('Supabase sync error:', e);
-    showToast('同步数据库失败', true);
+    // Don't show error toast on initial load - just silently fail
   }
 }
 
