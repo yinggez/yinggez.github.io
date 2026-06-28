@@ -132,6 +132,20 @@ const rulesTrigger = document.getElementById('rules-trigger');
 const rulesModal = document.getElementById('rules-modal');
 const closeModal = document.getElementById('close-modal');
 
+// Auth DOM Elements
+const btnShowAuthModal = document.getElementById('btn-show-auth-modal');
+const btnAuthLogout = document.getElementById('btn-auth-logout');
+const authModal = document.getElementById('auth-modal');
+const closeAuthModal = document.getElementById('close-auth-modal');
+const authEmail = document.getElementById('auth-email');
+const authPassword = document.getElementById('auth-password');
+const btnAuthLogin = document.getElementById('btn-auth-login');
+const btnAuthSignup = document.getElementById('btn-auth-signup');
+const authErrorMsg = document.getElementById('auth-error-msg');
+const authLoggedOut = document.getElementById('auth-logged-out');
+const authLoggedIn = document.getElementById('auth-logged-in');
+const userEmailDisplay = document.getElementById('user-email-display');
+
 
 // Load Data from Local Storage
 function loadLocalStorage() {
@@ -159,6 +173,29 @@ function initSupabase() {
       if (typeof supabase !== 'undefined' && supabase.createClient) {
         supabaseClient = supabase.createClient(url, key);
         console.log('Supabase client initialized.');
+
+        // Listen for authentication state changes
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+          if (session?.user) {
+            authLoggedOut.style.display = 'none';
+            authLoggedIn.style.display = 'flex';
+            userEmailDisplay.textContent = session.user.email;
+            userEmailDisplay.title = session.user.email;
+
+            // Set username automatically from email prefix if nickname is default
+            const emailPrefix = session.user.email.split('@')[0];
+            if (!localStorage.getItem('wc2026_username') || username === '玩家 1') {
+              username = emailPrefix;
+              usernameInput.value = username;
+              localStorage.setItem('wc2026_username', username);
+            }
+          } else {
+            authLoggedOut.style.display = 'flex';
+            authLoggedIn.style.display = 'none';
+            userEmailDisplay.textContent = '';
+          }
+          renderLeaderboard();
+        });
       } else {
         console.warn('Supabase library not loaded.');
       }
@@ -422,8 +459,110 @@ function setupEventListeners() {
   // Rules Modal
   rulesTrigger.addEventListener('click', () => rulesModal.classList.add('active'));
   closeModal.addEventListener('click', () => rulesModal.classList.remove('active'));
+
+  // Auth Event Listeners
+  if (btnShowAuthModal) {
+    btnShowAuthModal.addEventListener('click', () => {
+      authEmail.value = '';
+      authPassword.value = '';
+      authErrorMsg.style.display = 'none';
+      authModal.classList.add('active');
+    });
+  }
+
+  if (closeAuthModal) {
+    closeAuthModal.addEventListener('click', () => {
+      authModal.classList.remove('active');
+    });
+  }
+
+  if (btnAuthLogin) {
+    btnAuthLogin.addEventListener('click', async () => {
+      authErrorMsg.style.display = 'none';
+      const email = authEmail.value.trim();
+      const password = authPassword.value;
+
+      if (!email || !password) {
+        authErrorMsg.textContent = '请填写邮箱和密码';
+        authErrorMsg.style.display = 'block';
+        return;
+      }
+
+      btnAuthLogin.disabled = true;
+      btnAuthLogin.textContent = '登录中...';
+
+      try {
+        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        showToast('登录成功！');
+        authModal.classList.remove('active');
+      } catch (err) {
+        authErrorMsg.textContent = err.message || '登录失败，请检查输入';
+        authErrorMsg.style.display = 'block';
+      } finally {
+        btnAuthLogin.disabled = false;
+        btnAuthLogin.textContent = '登录';
+      }
+    });
+  }
+
+  if (btnAuthSignup) {
+    btnAuthSignup.addEventListener('click', async () => {
+      authErrorMsg.style.display = 'none';
+      const email = authEmail.value.trim();
+      const password = authPassword.value;
+
+      if (!email || !password) {
+        authErrorMsg.textContent = '请填写邮箱和密码';
+        authErrorMsg.style.display = 'block';
+        return;
+      }
+
+      if (password.length < 6) {
+        authErrorMsg.textContent = '密码长度至少为 6 位';
+        authErrorMsg.style.display = 'block';
+        return;
+      }
+
+      btnAuthSignup.disabled = true;
+      btnAuthSignup.textContent = '注册中...';
+
+      try {
+        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) throw error;
+
+        if (data?.session) {
+          showToast('注册并登录成功！');
+          authModal.classList.remove('active');
+        } else {
+          alert('注册成功！若开启了邮箱验证，请检查您的邮箱收件箱进行确认。');
+          authModal.classList.remove('active');
+        }
+      } catch (err) {
+        authErrorMsg.textContent = err.message || '注册失败';
+        authErrorMsg.style.display = 'block';
+      } finally {
+        btnAuthSignup.disabled = false;
+        btnAuthSignup.textContent = '注册';
+      }
+    });
+  }
+
+  if (btnAuthLogout) {
+    btnAuthLogout.addEventListener('click', async () => {
+      try {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) throw error;
+        showToast('已登出');
+      } catch (err) {
+        console.error('Logout failed:', err);
+      }
+    });
+  }
+
   window.addEventListener('click', (e) => {
     if (e.target === rulesModal) rulesModal.classList.remove('active');
+    if (e.target === authModal) authModal.classList.remove('active');
   });
 }
 

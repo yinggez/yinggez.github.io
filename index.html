@@ -23,6 +23,17 @@
     </div>
 
     <div class="header-actions">
+      <!-- Auth UI Section -->
+      <div id="auth-logged-out" class="user-profile-input" style="gap: 0.5rem; padding: 0.3rem 0.5rem 0.3rem 0.5rem;">
+        <button id="btn-show-auth-modal" style="background: transparent; color: var(--text-primary); cursor: pointer; border: none; font-size: 0.9rem; padding: 0.3rem 0.8rem; display: flex; align-items: center; gap: 0.25rem;">
+          🔑 登录 / 注册
+        </button>
+      </div>
+      <div id="auth-logged-in" class="user-profile-input" style="display: none; gap: 0.5rem; padding: 0.3rem 0.5rem 0.3rem 1rem;">
+        <span id="user-email-display" style="font-size: 0.9rem; color: var(--text-secondary); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+        <button id="btn-auth-logout" style="background: var(--accent-emerald); color: #000; border: none; font-size: 0.85rem; padding: 0.25rem 0.75rem; border-radius: 50px; cursor: pointer; font-weight: 600;">登出</button>
+      </div>
+
       <!-- Username setup -->
       <div class="user-profile-input">
         <input type="text" id="username-input" placeholder="输入您的名字" max="15">
@@ -166,6 +177,31 @@
 
 alter table predictions disable row level security;</pre>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div class="modal" id="auth-modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="modal-header">
+        <h2 id="auth-modal-title">登录 / 注册</h2>
+        <button class="close-modal" id="close-auth-modal">&times;</button>
+      </div>
+      <div style="padding: 1.5rem 0 0 0; display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <label style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">邮箱地址</label>
+          <input type="email" id="auth-email" class="score-input" style="width: 100%; height: 40px; text-align: left; padding: 0 0.8rem; font-size: 0.9rem; font-weight: normal; border-radius: 8px;" placeholder="email@example.com">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <label style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">密码</label>
+          <input type="password" id="auth-password" class="score-input" style="width: 100%; height: 40px; text-align: left; padding: 0 0.8rem; font-size: 0.9rem; font-weight: normal; border-radius: 8px;" placeholder="请输入密码">
+        </div>
+        <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+          <button class="btn btn-primary" id="btn-auth-login" style="flex: 1;">登录</button>
+          <button class="btn" id="btn-auth-signup" style="flex: 1;">注册</button>
+        </div>
+        <div id="auth-error-msg" style="color: var(--score-wrong); font-size: 0.85rem; text-align: center; display: none; line-height: 1.4;"></div>
       </div>
     </div>
   </div>
