@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-29T18:18:56.093Z",
+  "lastUpdated": "2026-06-29T21:39:44.271Z",
   "matches": [
     {
       "id": "73",
@@ -25,7 +25,7 @@
       "score1": null,
       "score2": null,
       "winner": null,
-      "status": "scheduled"
+      "status": "live"
     },
     {
       "id": "75",
@@ -48,10 +48,10 @@
       "kickoff": "2026-06-29T17:00:00.000Z",
       "team1": "巴西",
       "team2": "日本",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 2,
+      "score2": 1,
+      "winner": "巴西",
+      "status": "completed"
     },
     {
       "id": "77",
@@ -241,7 +241,7 @@
       "stage": "16强赛",
       "date": "7月5日 20:00 UTC",
       "kickoff": "2026-07-05T20:00:00.000Z",
-      "team1": "第76场胜者",
+      "team1": "巴西",
       "team2": "第78场胜者",
       "score1": null,
       "score2": null,
