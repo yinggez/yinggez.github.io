@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-29T23:04:18.847Z",
+  "lastUpdated": "2026-06-30T04:12:43.115Z",
   "matches": [
     {
       "id": "73",
@@ -22,10 +22,10 @@
       "kickoff": "2026-06-29T20:30:00.000Z",
       "team1": "德国",
       "team2": "巴拉圭",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 1,
+      "score2": 1,
+      "winner": "巴拉圭",
+      "status": "completed"
     },
     {
       "id": "75",
@@ -35,10 +35,10 @@
       "kickoff": "2026-06-30T01:00:00.000Z",
       "team1": "荷兰",
       "team2": "摩洛哥",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "scheduled"
+      "score1": 1,
+      "score2": 1,
+      "winner": "摩洛哥",
+      "status": "completed"
     },
     {
       "id": "76",
@@ -215,7 +215,7 @@
       "stage": "16强赛",
       "date": "7月4日 21:00 UTC",
       "kickoff": "2026-07-04T21:00:00.000Z",
-      "team1": "第74场胜者",
+      "team1": "巴拉圭",
       "team2": "第77场胜者",
       "score1": null,
       "score2": null,
@@ -229,7 +229,7 @@
       "date": "7月4日 17:00 UTC",
       "kickoff": "2026-07-04T17:00:00.000Z",
       "team1": "加拿大",
-      "team2": "第75场胜者",
+      "team2": "摩洛哥",
       "score1": null,
       "score2": null,
       "winner": null,
