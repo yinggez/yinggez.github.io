@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-06-30T20:07:28.324Z",
+  "lastUpdated": "2026-06-30T23:19:17.029Z",
   "matches": [
     {
       "id": "73",
@@ -61,10 +61,10 @@
       "kickoff": "2026-06-30T21:00:00.000Z",
       "team1": "法国",
       "team2": "瑞典",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "scheduled"
+      "score1": 3,
+      "score2": 0,
+      "winner": "法国",
+      "status": "completed"
     },
     {
       "id": "78",
@@ -216,7 +216,7 @@
       "date": "7月4日 21:00 UTC",
       "kickoff": "2026-07-04T21:00:00.000Z",
       "team1": "巴拉圭",
-      "team2": "第77场胜者",
+      "team2": "法国",
       "score1": null,
       "score2": null,
       "winner": null,
