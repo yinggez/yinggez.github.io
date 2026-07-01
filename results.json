@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-01T18:04:27.896Z",
+  "lastUpdated": "2026-07-01T21:42:08.175Z",
   "matches": [
     {
       "id": "73",
@@ -129,7 +129,7 @@
       "score1": null,
       "score2": null,
       "winner": null,
-      "status": "scheduled"
+      "status": "live"
     },
     {
       "id": "83",
