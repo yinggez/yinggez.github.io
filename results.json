@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-01T21:42:08.175Z",
+  "lastUpdated": "2026-07-01T23:21:20.390Z",
   "matches": [
     {
       "id": "73",
@@ -126,10 +126,10 @@
       "kickoff": "2026-07-01T20:00:00.000Z",
       "team1": "比利时",
       "team2": "塞内加尔",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 3,
+      "score2": 2,
+      "winner": "比利时",
+      "status": "completed"
     },
     {
       "id": "83",
@@ -281,7 +281,7 @@
       "date": "7月7日 00:00 UTC",
       "kickoff": "2026-07-07T00:00:00.000Z",
       "team1": "第81场胜者",
-      "team2": "第82场胜者",
+      "team2": "比利时",
       "score1": null,
       "score2": null,
       "winner": null,
