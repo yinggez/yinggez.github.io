@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-01T14:50:39.471Z",
+  "lastUpdated": "2026-07-01T18:04:27.896Z",
   "matches": [
     {
       "id": "73",
@@ -100,10 +100,10 @@
       "kickoff": "2026-07-01T16:00:00.000Z",
       "team1": "英格兰",
       "team2": "刚果金",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "scheduled"
+      "score1": 2,
+      "score2": 1,
+      "winner": "英格兰",
+      "status": "completed"
     },
     {
       "id": "81",
@@ -255,7 +255,7 @@
       "date": "7月6日 00:00 UTC",
       "kickoff": "2026-07-06T00:00:00.000Z",
       "team1": "墨西哥",
-      "team2": "第80场胜者",
+      "team2": "英格兰",
       "score1": null,
       "score2": null,
       "winner": null,
