@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-01T23:21:20.390Z",
+  "lastUpdated": "2026-07-02T04:08:07.623Z",
   "matches": [
     {
       "id": "73",
@@ -113,10 +113,10 @@
       "kickoff": "2026-07-02T00:00:00.000Z",
       "team1": "美国",
       "team2": "波黑",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "scheduled"
+      "score1": 2,
+      "score2": 0,
+      "winner": "美国",
+      "status": "completed"
     },
     {
       "id": "82",
@@ -280,7 +280,7 @@
       "stage": "16强赛",
       "date": "7月7日 00:00 UTC",
       "kickoff": "2026-07-07T00:00:00.000Z",
-      "team1": "第81场胜者",
+      "team1": "美国",
       "team2": "比利时",
       "score1": null,
       "score2": null,
