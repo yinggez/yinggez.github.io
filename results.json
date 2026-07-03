@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-03T19:39:33.999Z",
+  "lastUpdated": "2026-07-03T21:15:24.473Z",
   "matches": [
     {
       "id": "73",
@@ -204,10 +204,10 @@
       "kickoff": "2026-07-03T18:00:00.000Z",
       "team1": "澳大利亚",
       "team2": "埃及",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 1,
+      "score2": 1,
+      "winner": "埃及",
+      "status": "completed"
     },
     {
       "id": "89",
@@ -294,7 +294,7 @@
       "date": "7月7日 16:00 UTC",
       "kickoff": "2026-07-07T16:00:00.000Z",
       "team1": "第86场胜者",
-      "team2": "第88场胜者",
+      "team2": "埃及",
       "score1": null,
       "score2": null,
       "winner": null,
