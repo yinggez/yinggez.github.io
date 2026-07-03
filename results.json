@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-02T23:15:23.583Z",
+  "lastUpdated": "2026-07-03T03:54:28.123Z",
   "matches": [
     {
       "id": "73",
@@ -139,10 +139,10 @@
       "kickoff": "2026-07-02T23:00:00.000Z",
       "team1": "葡萄牙",
       "team2": "克罗地亚",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 2,
+      "score2": 1,
+      "winner": "葡萄牙",
+      "status": "completed"
     },
     {
       "id": "84",
@@ -168,7 +168,7 @@
       "score1": null,
       "score2": null,
       "winner": null,
-      "status": "scheduled"
+      "status": "live"
     },
     {
       "id": "86",
@@ -267,7 +267,7 @@
       "stage": "16强赛",
       "date": "7月6日 19:00 UTC",
       "kickoff": "2026-07-06T19:00:00.000Z",
-      "team1": "第83场胜者",
+      "team1": "葡萄牙",
       "team2": "西班牙",
       "score1": null,
       "score2": null,
