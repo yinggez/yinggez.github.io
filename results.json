@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-03T03:54:28.123Z",
+  "lastUpdated": "2026-07-03T07:30:09.364Z",
   "matches": [
     {
       "id": "73",
@@ -165,10 +165,10 @@
       "kickoff": "2026-07-03T03:00:00.000Z",
       "team1": "瑞士",
       "team2": "阿尔及利亚",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 2,
+      "score2": 0,
+      "winner": "瑞士",
+      "status": "completed"
     },
     {
       "id": "86",
@@ -306,7 +306,7 @@
       "stage": "16强赛",
       "date": "7月7日 20:00 UTC",
       "kickoff": "2026-07-07T20:00:00.000Z",
-      "team1": "第85场胜者",
+      "team1": "瑞士",
       "team2": "第87场胜者",
       "score1": null,
       "score2": null,
