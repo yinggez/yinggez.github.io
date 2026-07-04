@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-03T23:12:24.961Z",
+  "lastUpdated": "2026-07-04T03:47:47.649Z",
   "matches": [
     {
       "id": "73",
@@ -178,10 +178,10 @@
       "kickoff": "2026-07-03T22:00:00.000Z",
       "team1": "阿根廷",
       "team2": "佛得角",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 3,
+      "score2": 2,
+      "winner": "阿根廷",
+      "status": "completed"
     },
     {
       "id": "87",
@@ -191,10 +191,10 @@
       "kickoff": "2026-07-04T01:30:00.000Z",
       "team1": "哥伦比亚",
       "team2": "加纳",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "scheduled"
+      "score1": 1,
+      "score2": 0,
+      "winner": "哥伦比亚",
+      "status": "completed"
     },
     {
       "id": "88",
@@ -293,7 +293,7 @@
       "stage": "16强赛",
       "date": "7月7日 16:00 UTC",
       "kickoff": "2026-07-07T16:00:00.000Z",
-      "team1": "第86场胜者",
+      "team1": "阿根廷",
       "team2": "埃及",
       "score1": null,
       "score2": null,
@@ -307,7 +307,7 @@
       "date": "7月7日 20:00 UTC",
       "kickoff": "2026-07-07T20:00:00.000Z",
       "team1": "瑞士",
-      "team2": "第87场胜者",
+      "team2": "哥伦比亚",
       "score1": null,
       "score2": null,
       "winner": null,
