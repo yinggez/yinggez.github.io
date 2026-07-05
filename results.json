@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-04T23:04:01.230Z",
+  "lastUpdated": "2026-07-05T04:06:25.348Z",
   "matches": [
     {
       "id": "73",
@@ -217,10 +217,10 @@
       "kickoff": "2026-07-04T21:00:00.000Z",
       "team1": "巴拉圭",
       "team2": "法国",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 0,
+      "score2": 1,
+      "winner": "法国",
+      "status": "completed"
     },
     {
       "id": "90",
@@ -319,7 +319,7 @@
       "stage": "1/4决赛",
       "date": "7月9日 20:00 UTC",
       "kickoff": "2026-07-09T20:00:00.000Z",
-      "team1": "第89场胜者",
+      "team1": "法国",
       "team2": "摩洛哥",
       "score1": null,
       "score2": null,
