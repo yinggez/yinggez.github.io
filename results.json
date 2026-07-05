@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-05T21:10:15.233Z",
+  "lastUpdated": "2026-07-05T23:08:01.228Z",
   "matches": [
     {
       "id": "73",
@@ -243,10 +243,10 @@
       "kickoff": "2026-07-05T20:00:00.000Z",
       "team1": "巴西",
       "team2": "挪威",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 1,
+      "score2": 2,
+      "winner": "挪威",
+      "status": "completed"
     },
     {
       "id": "92",
@@ -345,7 +345,7 @@
       "stage": "1/4决赛",
       "date": "7月11日 21:00 UTC",
       "kickoff": "2026-07-11T21:00:00.000Z",
-      "team1": "第91场胜者",
+      "team1": "挪威",
       "team2": "第92场胜者",
       "score1": null,
       "score2": null,
