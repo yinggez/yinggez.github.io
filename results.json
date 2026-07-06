@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-06T18:15:59.682Z",
+  "lastUpdated": "2026-07-06T21:41:27.898Z",
   "matches": [
     {
       "id": "73",
@@ -269,10 +269,10 @@
       "kickoff": "2026-07-06T19:00:00.000Z",
       "team1": "葡萄牙",
       "team2": "西班牙",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "scheduled"
+      "score1": 0,
+      "score2": 1,
+      "winner": "西班牙",
+      "status": "completed"
     },
     {
       "id": "94",
@@ -332,7 +332,7 @@
       "stage": "1/4决赛",
       "date": "7月10日 19:00 UTC",
       "kickoff": "2026-07-10T19:00:00.000Z",
-      "team1": "第93场胜者",
+      "team1": "西班牙",
       "team2": "第94场胜者",
       "score1": null,
       "score2": null,
