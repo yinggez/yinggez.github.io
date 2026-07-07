@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-07T16:36:18.748Z",
+  "lastUpdated": "2026-07-07T20:06:25.731Z",
   "matches": [
     {
       "id": "73",
@@ -295,10 +295,10 @@
       "kickoff": "2026-07-07T16:00:00.000Z",
       "team1": "阿根廷",
       "team2": "埃及",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 3,
+      "score2": 2,
+      "winner": "阿根廷",
+      "status": "completed"
     },
     {
       "id": "96",
@@ -311,7 +311,7 @@
       "score1": null,
       "score2": null,
       "winner": null,
-      "status": "scheduled"
+      "status": "live"
     },
     {
       "id": "97",
@@ -358,7 +358,7 @@
       "stage": "1/4决赛",
       "date": "7月12日 01:00 UTC",
       "kickoff": "2026-07-12T01:00:00.000Z",
-      "team1": "第95场胜者",
+      "team1": "阿根廷",
       "team2": "第96场胜者",
       "score1": null,
       "score2": null,
