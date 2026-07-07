@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-07T20:06:25.731Z",
+  "lastUpdated": "2026-07-07T23:07:57.248Z",
   "matches": [
     {
       "id": "73",
@@ -308,10 +308,10 @@
       "kickoff": "2026-07-07T20:00:00.000Z",
       "team1": "瑞士",
       "team2": "哥伦比亚",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 0,
+      "score2": 0,
+      "winner": "瑞士",
+      "status": "completed"
     },
     {
       "id": "97",
@@ -359,7 +359,7 @@
       "date": "7月12日 01:00 UTC",
       "kickoff": "2026-07-12T01:00:00.000Z",
       "team1": "阿根廷",
-      "team2": "第96场胜者",
+      "team2": "瑞士",
       "score1": null,
       "score2": null,
       "winner": null,
