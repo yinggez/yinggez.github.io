@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-10T19:42:34.621Z",
+  "lastUpdated": "2026-07-10T21:12:40.137Z",
   "matches": [
     {
       "id": "73",
@@ -334,10 +334,10 @@
       "kickoff": "2026-07-10T19:00:00.000Z",
       "team1": "西班牙",
       "team2": "比利时",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 2,
+      "score2": 1,
+      "winner": "西班牙",
+      "status": "completed"
     },
     {
       "id": "99",
@@ -372,7 +372,7 @@
       "date": "7月14日 19:00 UTC",
       "kickoff": "2026-07-14T19:00:00.000Z",
       "team1": "法国",
-      "team2": "第98场胜者",
+      "team2": "西班牙",
       "score1": null,
       "score2": null,
       "winner": null,
