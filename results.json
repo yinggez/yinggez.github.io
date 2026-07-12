@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-11T22:57:03.035Z",
+  "lastUpdated": "2026-07-12T03:35:48.015Z",
   "matches": [
     {
       "id": "73",
@@ -347,10 +347,10 @@
       "kickoff": "2026-07-11T21:00:00.000Z",
       "team1": "挪威",
       "team2": "英格兰",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 1,
+      "score2": 2,
+      "winner": "英格兰",
+      "status": "completed"
     },
     {
       "id": "100",
@@ -384,7 +384,7 @@
       "stage": "半决赛",
       "date": "7月15日 19:00 UTC",
       "kickoff": "2026-07-15T19:00:00.000Z",
-      "team1": "第99场胜者",
+      "team1": "英格兰",
       "team2": "第100场胜者",
       "score1": null,
       "score2": null,
