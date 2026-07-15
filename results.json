@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-15T19:22:09.119Z",
+  "lastUpdated": "2026-07-15T21:07:08.796Z",
   "matches": [
     {
       "id": "73",
@@ -386,10 +386,10 @@
       "kickoff": "2026-07-15T19:00:00.000Z",
       "team1": "英格兰",
       "team2": "阿根廷",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 1,
+      "score2": 2,
+      "winner": "阿根廷",
+      "status": "completed"
     },
     {
       "id": "103",
