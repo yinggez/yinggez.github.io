@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-17T10:05:24.365Z",
+  "lastUpdated": "2026-07-17T13:53:19.805Z",
   "matches": [
     {
       "id": "73",
@@ -397,8 +397,8 @@
       "stage": "三四名决赛",
       "date": "7月18日 21:00 UTC",
       "kickoff": "2026-07-18T21:00:00.000Z",
-      "team1": "第101场败者",
-      "team2": "第102场败者",
+      "team1": "法国",
+      "team2": "英格兰",
       "score1": null,
       "score2": null,
       "winner": null,
@@ -410,8 +410,8 @@
       "stage": "决赛",
       "date": "7月19日 19:00 UTC",
       "kickoff": "2026-07-19T19:00:00.000Z",
-      "team1": "第101场胜者",
-      "team2": "第102场胜者",
+      "team1": "西班牙",
+      "team2": "阿根廷",
       "score1": null,
       "score2": null,
       "winner": null,
