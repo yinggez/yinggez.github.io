@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-19T20:59:25.001Z",
+  "lastUpdated": "2026-07-19T22:58:15.674Z",
   "matches": [
     {
       "id": "73",
@@ -412,10 +412,10 @@
       "kickoff": "2026-07-19T19:00:00.000Z",
       "team1": "西班牙",
       "team2": "阿根廷",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 1,
+      "score2": 0,
+      "winner": "西班牙",
+      "status": "completed"
     }
   ]
 }
