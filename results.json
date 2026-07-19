@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-07-18T22:56:30.107Z",
+  "lastUpdated": "2026-07-19T03:31:59.791Z",
   "matches": [
     {
       "id": "73",
@@ -399,10 +399,10 @@
       "kickoff": "2026-07-18T21:00:00.000Z",
       "team1": "法国",
       "team2": "英格兰",
-      "score1": null,
-      "score2": null,
-      "winner": null,
-      "status": "live"
+      "score1": 4,
+      "score2": 6,
+      "winner": "英格兰",
+      "status": "completed"
     },
     {
       "id": "104",
